@@ -87,7 +87,7 @@
                 <!-- Footer Link -->
                 <div class="text-center pt-1">
                     <p class="text-[14px] leading-[20px] text-[#4A5246]">
-                        Belum punya akun? <a class="font-medium text-[#7A6420] hover:underline" href="#">Daftar</a>
+                        Belum punya akun? <a class="font-medium text-[#7A6420] hover:underline" href="{{ url('/daftar') }}">Daftar</a>
                     </p>
                 </div>
             </form>

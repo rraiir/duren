@@ -27,6 +27,7 @@ class Product extends Model
         'stock',
         'type',
         'eta_text',
+        'description',
         'is_active',
     ];
 

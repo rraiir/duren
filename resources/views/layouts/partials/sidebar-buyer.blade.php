@@ -28,7 +28,7 @@
         </a>
 
         <!-- 4. Pesanan Saya -->
-        <a href="{{ url('/pesanan') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isOrdersActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
+        <a href="{{ url('/pesanan-saya') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isOrdersActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
             <span class="material-symbols-outlined text-[20px] {{ $isOrdersActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">receipt_long</span>
             <span class="text-[15px]">Pesanan Saya</span>
         </a>

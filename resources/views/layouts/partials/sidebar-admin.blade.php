@@ -7,6 +7,7 @@
     $isPesananActive = request()->is('admin/pesanan*') && !$isVerifikasi;
     $isVerifikasiActive = $isVerifikasi;
     $isPembeliActive = request()->is('admin/pembeli*');
+    $isArtikelActive = request()->is('admin/artikel*');
     $isLaporanActive = request()->is('admin/laporan*');
     $isPengaturanActive = request()->is('admin/pengaturan*');
 @endphp
@@ -44,13 +45,19 @@
             <span class="text-[15px]">Pembeli</span>
         </a>
 
-        <!-- 6. Laporan -->
+        <!-- 6. Artikel -->
+        <a href="{{ url('/admin/artikel') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isArtikelActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
+            <span class="material-symbols-outlined text-[20px] {{ $isArtikelActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">article</span>
+            <span class="text-[15px]">Artikel</span>
+        </a>
+
+        <!-- 7. Laporan -->
         <a href="{{ url('/admin/laporan') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isLaporanActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
             <span class="material-symbols-outlined text-[20px] {{ $isLaporanActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">bar_chart</span>
             <span class="text-[15px]">Laporan</span>
         </a>
 
-        <!-- 7. Pengaturan -->
+        <!-- 8. Pengaturan -->
         <a href="{{ url('/admin/pengaturan') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isPengaturanActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
             <span class="material-symbols-outlined text-[20px] {{ $isPengaturanActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">settings</span>
             <span class="text-[15px]">Pengaturan</span>
