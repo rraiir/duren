@@ -53,15 +53,23 @@
 
         <!-- Kartu Register 480px, Padding 32px, Radius 20px, Border #E4E9DA -->
         <div class="w-full bg-white rounded-[20px] border border-[#E4E9DA] shadow-[0_8px_24px_rgba(40,52,30,0.06)] p-6 md:p-[32px] transition-all duration-200">
-            <form class="space-y-4" onsubmit="event.preventDefault();">
+            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+                @csrf
+
                 <!-- Input Nama Lengkap -->
                 <div>
                     <label class="block text-[14px] font-medium text-[#1F261D] mb-1.5 leading-[20px]">
                         Nama lengkap
                     </label>
                     <div class="relative">
-                        <input class="w-full h-[48px] px-4 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] transition" placeholder="Masukkan nama lengkap" type="text" value="Budi Santoso">
+                        <input class="w-full h-[48px] px-4 rounded-[12px] border @error('name') border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 @else border-[#E4E9DA] focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] @enderror bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none transition" name="name" placeholder="Masukkan nama lengkap" type="text" value="{{ old('name') }}" required autofocus>
                     </div>
+                    @error('name')
+                        <p class="text-[12px] text-red-600 mt-1 font-medium leading-[17px] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">error</span>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Input WhatsApp -->
@@ -70,11 +78,18 @@
                         Nomor WhatsApp
                     </label>
                     <div class="relative">
-                        <input class="w-full h-[48px] px-4 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] transition" placeholder="Contoh 0812xxxxxxx" type="text" value="081311112222">
+                        <input class="w-full h-[48px] px-4 rounded-[12px] border @error('phone') border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 @else border-[#E4E9DA] focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] @enderror bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none transition" name="phone" placeholder="Contoh 0812xxxxxxx" type="text" value="{{ old('phone') }}" required>
                     </div>
-                    <p class="text-[12px] leading-[17px] text-[#6B7366] mt-1 font-normal">
-                        Harus aktif. Admin memakainya untuk konfirmasi ongkir dan garansi.
-                    </p>
+                    @error('phone')
+                        <p class="text-[12px] text-red-600 mt-1 font-medium leading-[17px] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">error</span>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @else
+                        <p class="text-[12px] leading-[17px] text-[#6B7366] mt-1 font-normal">
+                            Harus aktif. Admin memakainya untuk konfirmasi ongkir dan garansi.
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Input Alamat Lengkap -->
@@ -83,8 +98,14 @@
                         Alamat lengkap
                     </label>
                     <div class="relative">
-                        <textarea class="w-full rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] p-3 focus:outline-none focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] transition resize-none" placeholder="Jalan, nomor, RT/RW, kelurahan, kota" rows="3">Jl. Kenanga No. 5, Kebayoran Baru, Jakarta Selatan</textarea>
+                        <textarea class="w-full rounded-[12px] border @error('address') border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 @else border-[#E4E9DA] focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] @enderror bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] p-3 focus:outline-none transition resize-none" name="address" placeholder="Jalan, nomor, RT/RW, kelurahan, kota" rows="3" required>{{ old('address') }}</textarea>
                     </div>
+                    @error('address')
+                        <p class="text-[12px] text-red-600 mt-1 font-medium leading-[17px] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">error</span>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Input Password -->
@@ -93,27 +114,34 @@
                         Password
                     </label>
                     <div class="relative flex items-center">
-                        <input class="w-full h-[48px] pl-4 pr-11 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] transition" id="regPasswordInput" placeholder="Masukkan password" type="password" value="rahasia123">
+                        <input class="w-full h-[48px] pl-4 pr-11 rounded-[12px] border @error('password') border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 @else border-[#E4E9DA] focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] @enderror bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none transition" id="regPasswordInput" name="password" placeholder="Masukkan password" type="password" required>
                         <button aria-label="Toggle password visibility" class="absolute right-3.5 text-[#7A8275] hover:text-[#1F261D] transition p-1 flex items-center justify-center cursor-pointer" onclick="toggleRegPassword()" type="button">
                             <span class="material-symbols-outlined text-[20px]" id="regEyeIcon">visibility</span>
                         </button>
                     </div>
-                    <p class="text-[12px] leading-[17px] text-[#6B7366] mt-1 font-normal">
-                        Minimal 8 karakter
-                    </p>
+                    @error('password')
+                        <p class="text-[12px] text-red-600 mt-1 font-medium leading-[17px] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">error</span>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @else
+                        <p class="text-[12px] leading-[17px] text-[#6B7366] mt-1 font-normal">
+                            Minimal 8 karakter
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Tombol Daftar (#F2D98A) -->
                 <div class="pt-2">
-                    <a href="{{ url('/login') }}" class="w-full h-[48px] rounded-[14px] bg-[#F2D98A] hover:bg-[#ebd07c] active:bg-[#dfc572] text-[#1F261D] font-semibold text-[16px] leading-[22px] transition flex items-center justify-center cursor-pointer shadow-sm">
+                    <button type="submit" class="w-full h-[48px] rounded-[14px] bg-[#F2D98A] hover:bg-[#ebd07c] active:bg-[#dfc572] text-[#1F261D] font-semibold text-[16px] leading-[22px] transition flex items-center justify-center cursor-pointer shadow-sm">
                         Daftar
-                    </a>
+                    </button>
                 </div>
 
                 <!-- Footer Link -->
                 <div class="text-center pt-2">
                     <p class="text-[14px] leading-[20px] text-[#4A5246]">
-                        Sudah punya akun? <a class="font-medium text-[#7A6420] hover:underline" href="{{ url('/login') }}">Masuk</a>
+                        Sudah punya akun? <a class="font-medium text-[#7A6420] hover:underline" href="{{ route('login') }}">Masuk</a>
                     </p>
                 </div>
             </form>

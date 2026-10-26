@@ -55,12 +55,19 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <a href="{{ url('/login') }}" class="h-10 px-5 rounded-[14px] bg-white border border-[#E4E9DA] text-[#1F261D] hover:bg-[#F8FAF2] font-medium text-[14px] flex items-center justify-center transition-colors">
-                    Masuk
-                </a>
-                <a href="{{ url('/daftar') }}" class="h-10 px-5 rounded-[14px] bg-[#F2D98A] text-[#1F261D] hover:brightness-95 font-semibold text-[14px] flex items-center justify-center transition-all shadow-sm">
-                    Daftar
-                </a>
+                @auth
+                    <a href="{{ auth()->user()->role === 'admin' ? url('/admin') : url('/dashboard') }}" class="h-10 px-5 rounded-[14px] bg-[#E3F1DC] text-[#1F3318] hover:bg-[#d5ebd0] font-semibold text-[14px] flex items-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                        <span>Dashboard</span>
+                    </a>
+                @else
+                    <a href="{{ url('/login') }}" class="h-10 px-5 rounded-[14px] bg-white border border-[#E4E9DA] text-[#1F261D] hover:bg-[#F8FAF2] font-medium text-[14px] flex items-center justify-center transition-colors">
+                        Masuk
+                    </a>
+                    <a href="{{ url('/daftar') }}" class="h-10 px-5 rounded-[14px] bg-[#F2D98A] text-[#1F261D] hover:brightness-95 font-semibold text-[14px] flex items-center justify-center transition-all shadow-sm">
+                        Daftar
+                    </a>
+                @endauth
             </div>
         </div>
     </header>

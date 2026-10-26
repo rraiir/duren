@@ -53,15 +53,30 @@
 
         <!-- Kartu Login 480px, Padding 32px, Radius 20px, Border #E4E9DA -->
         <div class="w-full bg-white rounded-[20px] border border-[#E4E9DA] shadow-[0_8px_24px_rgba(40,52,30,0.06)] p-[32px] transition-all duration-200">
-            <form class="space-y-5" onsubmit="event.preventDefault();">
+            @if (session('success'))
+                <div class="mb-5 p-3.5 rounded-[12px] bg-[#E3F1DC] border border-[#CFE6C5] text-[#1F3318] text-[14px] flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[20px] text-[#3F5B34]">check_circle</span>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                @csrf
+
                 <!-- Input WhatsApp -->
                 <div>
                     <label class="block text-[14px] font-medium text-[#1F261D] mb-2 leading-[20px]">
                         Nomor WhatsApp
                     </label>
                     <div class="relative">
-                        <input class="w-full h-[48px] px-4 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] transition" placeholder="Masukkan nomor WhatsApp, contoh 0812xxxxxxx" type="text" value="081234567890">
+                        <input class="w-full h-[48px] px-4 rounded-[12px] border @error('phone') border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 @else border-[#E4E9DA] focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] @enderror bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none transition" name="phone" placeholder="Masukkan nomor WhatsApp, contoh 0812xxxxxxx" type="text" value="{{ old('phone') }}" required autofocus>
                     </div>
+                    @error('phone')
+                        <p class="text-[12px] text-red-600 mt-1.5 font-medium leading-[17px] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">error</span>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Input Password -->
@@ -70,24 +85,30 @@
                         Password
                     </label>
                     <div class="relative flex items-center">
-                        <input class="w-full h-[48px] pl-4 pr-11 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] transition" id="passwordInput" placeholder="Masukkan password" type="password" value="••••••••">
+                        <input class="w-full h-[48px] pl-4 pr-11 rounded-[12px] border @error('password') border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 @else border-[#E4E9DA] focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] @enderror bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] focus:outline-none transition" id="passwordInput" name="password" placeholder="Masukkan password" type="password" required>
                         <button aria-label="Toggle password visibility" class="absolute right-3.5 text-[#7A8275] hover:text-[#1F261D] transition p-1 flex items-center justify-center cursor-pointer" onclick="togglePassword()" type="button">
                             <span class="material-symbols-outlined text-[20px]" id="eyeIcon">visibility</span>
                         </button>
                     </div>
+                    @error('password')
+                        <p class="text-[12px] text-red-600 mt-1.5 font-medium leading-[17px] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">error</span>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Tombol Masuk (#F2D98A) -->
                 <div class="pt-1">
-                    <a href="{{ url('/admin') }}" class="w-full h-[48px] rounded-[14px] bg-[#F2D98A] hover:bg-[#ebd07c] active:bg-[#dfc572] text-[#1F261D] font-semibold text-[16px] leading-[22px] transition flex items-center justify-center cursor-pointer">
+                    <button type="submit" class="w-full h-[48px] rounded-[14px] bg-[#F2D98A] hover:bg-[#ebd07c] active:bg-[#dfc572] text-[#1F261D] font-semibold text-[16px] leading-[22px] transition flex items-center justify-center cursor-pointer shadow-sm">
                         Masuk
-                    </a>
+                    </button>
                 </div>
 
                 <!-- Footer Link -->
                 <div class="text-center pt-1">
                     <p class="text-[14px] leading-[20px] text-[#4A5246]">
-                        Belum punya akun? <a class="font-medium text-[#7A6420] hover:underline" href="{{ url('/daftar') }}">Daftar</a>
+                        Belum punya akun? <a class="font-medium text-[#7A6420] hover:underline" href="{{ route('register') }}">Daftar</a>
                     </p>
                 </div>
             </form>

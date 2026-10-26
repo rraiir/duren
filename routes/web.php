@@ -1,7 +1,15 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// Halaman Publik (terbuka tanpa login)
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
@@ -14,64 +22,63 @@ Route::get('/artikel/{id}', function ($id) {
     return view('articles.show', ['id' => $id]);
 })->name('articles.show');
 
-Route::get('/daftar', function () {
-    return view('auth.register');
-})->name('register');
+// Autentikasi (khusus pengguna yang belum login)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::match(['get', 'post'], '/logout', function () {
-    if (auth()->check()) {
-        auth()->logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-    }
-    return redirect('/login');
-})->name('logout');
-
-Route::get('/dashboard', function () {
-    return view('buyer.dashboard');
-})->name('buyer.dashboard');
-
-Route::get('/katalog', function () {
-    return view('buyer.catalog');
-})->name('buyer.catalog');
-
-Route::get('/katalog/{id}', function ($id) {
-    return view('buyer.product-detail', ['id' => $id]);
-})->name('buyer.product.show');
-
-Route::get('/keranjang', function () {
-    return view('buyer.cart');
-})->name('buyer.cart');
-
-Route::get('/checkout', function () {
-    return view('buyer.checkout');
-})->name('buyer.checkout');
-
-Route::get('/pembayaran/{code?}', function ($code = 'DRN-0042') {
-    return view('buyer.payment', ['code' => $code]);
-})->name('buyer.payment');
-
-Route::get('/pesanan-saya', function () {
-    return view('buyer.orders');
-})->name('buyer.orders');
-
-Route::get('/pesanan-saya/{code}', function ($code) {
-    return view('buyer.order-detail', ['code' => $code]);
-})->name('buyer.orders.show');
-
-Route::get('/pesanan', function () {
-    return redirect('/pesanan-saya');
+    Route::get('/daftar', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/daftar', [AuthController::class, 'register']);
 });
 
-Route::get('/aturan-garansi', function () {
-    return view('buyer.rules');
-})->name('buyer.rules');
+// Logout
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::prefix('admin')->group(function () {
+// Area Pembeli (wajib login & peran buyer)
+Route::middleware(['auth', 'buyer'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('buyer.dashboard');
+    })->name('buyer.dashboard');
+
+    Route::get('/katalog', function () {
+        return view('buyer.catalog');
+    })->name('buyer.catalog');
+
+    Route::get('/katalog/{id}', function ($id) {
+        return view('buyer.product-detail', ['id' => $id]);
+    })->name('buyer.product.show');
+
+    Route::get('/keranjang', function () {
+        return view('buyer.cart');
+    })->name('buyer.cart');
+
+    Route::get('/checkout', function () {
+        return view('buyer.checkout');
+    })->name('buyer.checkout');
+
+    Route::get('/pembayaran/{code?}', function ($code = 'DRN-0042') {
+        return view('buyer.payment', ['code' => $code]);
+    })->name('buyer.payment');
+
+    Route::get('/pesanan-saya', function () {
+        return view('buyer.orders');
+    })->name('buyer.orders');
+
+    Route::get('/pesanan-saya/{code}', function ($code) {
+        return view('buyer.order-detail', ['code' => $code]);
+    })->name('buyer.orders.show');
+
+    Route::get('/pesanan', function () {
+        return redirect('/pesanan-saya');
+    });
+
+    Route::get('/aturan-garansi', function () {
+        return view('buyer.rules');
+    })->name('buyer.rules');
+});
+
+// Area Admin (wajib login & peran admin)
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
