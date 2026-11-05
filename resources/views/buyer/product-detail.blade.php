@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Durian - DuREN')
+@section('title', $product->name . ' ' . $product->size . ' - DuREN')
 
 @section('content')
 <!-- Navigasi Kembali -->
 <div class="mb-5">
-    <a class="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#7A6420] hover:underline transition-opacity" href="{{ url('/katalog') }}">
+    <a class="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#7A6420] hover:underline transition-opacity" href="{{ route('buyer.catalog') }}">
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         <span>Kembali ke Katalog</span>
     </a>
@@ -16,7 +16,7 @@
     <!-- Kolom Kiri: Kartu Ilustrasi Durian -->
     <div class="lg:col-span-5 custom-card relative min-h-[420px] flex items-center justify-center overflow-hidden">
         <div class="absolute top-6 left-6 z-10">
-            <x-badge-status type="ready" />
+            <x-badge-status :type="$product->type" />
         </div>
         <div class="relative w-[280px] h-[280px] flex items-center justify-center">
             <div class="absolute w-56 h-56 rounded-full bg-[#FAF1CE] opacity-80 -top-2 -right-2"></div>
@@ -35,21 +35,21 @@
     <div class="lg:col-span-7 custom-card p-8 flex flex-col justify-between">
         <div>
             <h1 class="text-[36px] font-bold text-[#1F261D] tracking-tight">
-                Montong L
+                {{ $product->name }} {{ $product->size }}
             </h1>
 
             <div class="flex items-center gap-2.5 mt-3">
                 <span class="inline-flex items-center bg-[#E3F1DC] rounded-full px-3 py-1 text-[12px] font-bold text-[#1F3318]">
-                    L
+                    {{ $product->size }}
                 </span>
                 <span class="inline-flex items-center bg-white border border-[#E4E9DA] rounded-full px-3 py-1 text-[12px] font-medium text-[#4A5246]">
-                    Est. 3,2 kg
+                    Est. {{ number_format($product->est_weight_gram / 1000, 1, ',', '.') }} kg
                 </span>
             </div>
 
             <div class="flex items-baseline gap-3 mt-6">
                 <span class="text-[36px] font-bold text-[#1F261D]">
-                    Rp 250.000
+                    Rp {{ number_format($product->price, 0, ',', '.') }}
                 </span>
                 <span class="text-[14px] text-[#6B7366]">
                     Harga per buah
@@ -58,8 +58,21 @@
 
             <div class="flex items-center gap-2 mt-4">
                 <span class="material-symbols-outlined text-[20px] text-[#4E6B43]">inventory_2</span>
-                <span class="text-[14px] text-[#4A5246]">Sisa 12 buah</span>
+                <span class="text-[14px] text-[#4A5246]">
+                    @if($product->type === 'preorder')
+                        Kuota tersedia: {{ $product->stock }} buah
+                    @else
+                        Sisa {{ $product->stock }} buah
+                    @endif
+                </span>
             </div>
+
+            @if($product->type === 'preorder' && $product->eta_text)
+                <p class="text-[13px] text-[#7A6420] mt-2 font-medium flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[17px]">event</span>
+                    <span>{{ $product->eta_text }}</span>
+                </p>
+            @endif
 
             <hr class="border-t border-[#E4E9DA] my-6">
 
@@ -71,7 +84,7 @@
                         <span class="material-symbols-outlined text-[18px]">remove</span>
                     </button>
                     <span class="w-12 text-center text-[16px] font-semibold text-[#1F261D] select-none" id="qty-val">1</span>
-                    <button class="w-10 h-10 rounded-[10px] bg-white hover:bg-[#F8FAF2] border border-[#E4E9DA] flex items-center justify-center text-[#1F261D] transition-colors cursor-pointer" id="btn-plus" type="button" onclick="updateDetailQty(1)">
+                    <button class="w-10 h-10 rounded-[10px] bg-white hover:bg-[#F8FAF2] border border-[#E4E9DA] flex items-center justify-center text-[#1F261D] transition-colors cursor-pointer" id="btn-plus" type="button" onclick="updateDetailQty(1, {{ $product->stock }})">
                         <span class="material-symbols-outlined text-[18px]">add</span>
                     </button>
                 </div>
@@ -80,11 +93,17 @@
 
         <!-- Tombol Aksi Keranjang -->
         <div class="flex flex-col sm:flex-row items-center gap-4 mt-8">
-            <a href="{{ url('/keranjang') }}" class="w-full sm:flex-1 h-12 px-6 rounded-[14px] bg-[#F2D98A] hover:bg-[#ECDDA1] text-[#1F261D] font-semibold text-[14px] flex items-center justify-center gap-2 transition-all shadow-sm">
-                <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
-                <span>Tambah ke Keranjang</span>
-            </a>
-            <a href="{{ url('/keranjang') }}" class="w-full sm:w-auto h-12 px-6 rounded-[14px] bg-white hover:bg-[#F8FAF2] border border-[#E4E9DA] text-[#1F261D] font-medium text-[14px] flex items-center justify-center transition-all">
+            @if ($product->stock > 0)
+                <a href="{{ route('buyer.cart') }}" class="w-full sm:flex-1 h-12 px-6 rounded-[14px] bg-[#F2D98A] hover:bg-[#ECDDA1] text-[#1F261D] font-semibold text-[14px] flex items-center justify-center gap-2 transition-all shadow-xs">
+                    <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+                    <span>Tambah ke Keranjang</span>
+                </a>
+            @else
+                <button disabled class="w-full sm:flex-1 h-12 px-6 rounded-[14px] bg-[#E4E9DA] text-[#7A8275] font-semibold text-[14px] flex items-center justify-center gap-2 cursor-not-allowed">
+                    Stok Habis
+                </button>
+            @endif
+            <a href="{{ route('buyer.cart') }}" class="w-full sm:w-auto h-12 px-6 rounded-[14px] bg-white hover:bg-[#F8FAF2] border border-[#E4E9DA] text-[#1F261D] font-medium text-[14px] flex items-center justify-center transition-all">
                 Lihat Keranjang
             </a>
         </div>
@@ -95,9 +114,9 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
     <!-- Kartu Deskripsi -->
     <div class="custom-card p-6">
-        <h2 class="text-[20px] font-semibold text-[#1F261D] mb-3">Deskripsi</h2>
+        <h2 class="text-[20px] font-semibold text-[#1F261D] mb-3">Deskripsi Karakter Durian</h2>
         <p class="text-[14px] text-[#4A5246] leading-relaxed">
-            Durian Montong ukuran L dengan estimasi berat 3,2 kg. Daging buah tebal berwarna kuning keemasan dengan tekstur lembut, rasa manis legit yang dominan, serta aroma harum khas yang menggugah selera.
+            {{ $product->description ?: 'Durian pilihan berkualitas tinggi dengan aroma wangi semerbak, biji kempes, dan daging tebal yang memanjakan lidah para penikmat durian sejati.' }}
         </p>
     </div>
 
@@ -122,19 +141,47 @@
                     <span class="material-symbols-outlined text-[18px] text-[#1F3318]">verified_user</span>
                 </div>
                 <span class="text-[14px] font-medium text-[#1F261D]">
-                    Baca <a class="text-[#7A6420] underline font-semibold hover:opacity-80" href="{{ url('/aturan-garansi') }}">Aturan & Garansi</a> sebelum membayar
+                    Baca <a class="text-[#7A6420] underline font-semibold hover:opacity-80" href="{{ route('buyer.rules') }}">Aturan & Garansi</a> sebelum membayar
                 </span>
             </div>
         </div>
     </div>
 </div>
 
+@if ($otherProducts->isNotEmpty())
+    <!-- Produk Aktif Lainnya -->
+    <div class="mt-12">
+        <h2 class="text-[24px] font-bold text-[#1F261D] mb-6">Varian Durian Lainnya</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach ($otherProducts as $op)
+                <a href="{{ route('buyer.product.show', $op->id) }}" class="custom-card p-5 hover-lift flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[18px] font-bold text-[#1F261D] group-hover:text-[#7A6420] transition-colors">
+                                {{ $op->name }} {{ $op->size }}
+                            </span>
+                            <x-badge-status :type="$op->type" />
+                        </div>
+                        <p class="text-[13px] text-[#6B7366] line-clamp-2 mb-4">
+                            {{ $op->description ?: 'Durian utuh pilihan berkualitas dengan rasa nikmat.' }}
+                        </p>
+                    </div>
+                    <div class="flex items-baseline justify-between pt-3 border-t border-[#E4E9DA]">
+                        <span class="text-[13px] text-[#6B7366]">Est. {{ number_format($op->est_weight_gram / 1000, 1, ',', '.') }} kg</span>
+                        <span class="text-[18px] font-bold text-[#1F261D]">Rp {{ number_format($op->price, 0, ',', '.') }}</span>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+@endif
+
 @push('scripts')
 <script>
-    function updateDetailQty(delta) {
+    function updateDetailQty(delta, maxStock = 999) {
         const valSpan = document.getElementById('qty-val');
         let current = parseInt(valSpan.textContent) || 1;
-        current = Math.max(1, current + delta);
+        current = Math.max(1, Math.min(maxStock, current + delta));
         valSpan.textContent = current;
     }
 </script>

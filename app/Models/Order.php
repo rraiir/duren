@@ -70,9 +70,25 @@ class Order extends Model
     }
 
     /**
+     * Alias relasi ke pembeli.
+     */
+    public function buyer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
      * Relasi ke OrderItem.
      */
     public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Alias relasi orderItems.
+     */
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }

@@ -12,24 +12,51 @@
         </div>
     </div>
 
+    @if (session('success'))
+        <div class="p-4 rounded-[14px] bg-[#E3F1DC] border border-[#CFE6C5] text-[#1F3318] text-[14px] flex items-center gap-2.5 shadow-xs">
+            <span class="material-symbols-outlined text-[20px] text-[#3F5B34]">check_circle</span>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="p-4 rounded-[14px] bg-[#FBDDC6] border border-[#EFC3A3] text-[#8C4A1A] text-[14px] shadow-xs">
+            <div class="flex items-center gap-2 font-semibold mb-1">
+                <span class="material-symbols-outlined text-[20px]">error</span>
+                <span>Terjadi kesalahan pengisian:</span>
+            </div>
+            <ul class="list-disc list-inside text-[13px] space-y-0.5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- 2. KARTU FILTER & PENCARIAN -->
+    @php
+        $currentFilter = request('filter');
+    @endphp
     <div class="rounded-[20px] border border-[#E4E9DA] bg-white shadow-[0_8px_24px_rgba(40,52,30,0.06)] px-6 py-5 flex items-center justify-between gap-6">
         <!-- Kotak Pencarian -->
-        <div class="relative w-[320px]">
+        <form method="GET" action="{{ route('admin.buyers') }}" class="relative w-[320px]">
+            @if(request('filter'))
+                <input type="hidden" name="filter" value="{{ request('filter') }}">
+            @endif
             <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#7A8275] text-[20px]">search</span>
-            <input class="w-full h-12 pl-11 pr-4 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] text-[14px] placeholder-[#7A8275] focus:outline-none focus:border-[#B7D7A8] transition-colors" id="buyer-search-input" placeholder="Cari nama atau nomor WhatsApp" type="text">
-        </div>
+            <input class="w-full h-12 pl-11 pr-4 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] text-[14px] placeholder-[#7A8275] focus:outline-none focus:border-[#B7D7A8] transition-colors" name="search" placeholder="Cari nama atau nomor WhatsApp" type="text" value="{{ request('search') }}">
+        </form>
         <!-- Status Filter Chips -->
-        <div class="flex items-center gap-2" id="buyer-filter-chips">
-            <button class="buyer-chip-btn h-10 px-5 rounded-full text-[14px] font-semibold bg-[#E8F3E1] text-[#1F3318] border border-[#CFE6C5] transition-colors cursor-pointer" data-filter="all" type="button">
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.buyers', array_filter(['search' => request('search')])) }}" class="h-10 px-5 rounded-full text-[14px] {{ empty($currentFilter) ? 'bg-[#E8F3E1] text-[#1F3318] font-semibold border border-[#CFE6C5]' : 'bg-white text-[#4A5246] border border-[#E4E9DA] hover:bg-[#F8FAF2] font-medium' }} transition-colors flex items-center cursor-pointer">
                 Semua
-            </button>
-            <button class="buyer-chip-btn h-10 px-5 rounded-full text-[14px] font-medium bg-white text-[#4A5246] border border-[#E4E9DA] hover:bg-[#F8FAF2] transition-colors cursor-pointer" data-filter="aktif" type="button">
+            </a>
+            <a href="{{ route('admin.buyers', array_filter(['filter' => 'aktif', 'search' => request('search')])) }}" class="h-10 px-5 rounded-full text-[14px] {{ $currentFilter === 'aktif' ? 'bg-[#E8F3E1] text-[#1F3318] font-semibold border border-[#CFE6C5]' : 'bg-white text-[#4A5246] border border-[#E4E9DA] hover:bg-[#F8FAF2] font-medium' }} transition-colors flex items-center cursor-pointer">
                 Aktif
-            </button>
-            <button class="buyer-chip-btn h-10 px-5 rounded-full text-[14px] font-medium bg-white text-[#4A5246] border border-[#E4E9DA] hover:bg-[#F8FAF2] transition-colors cursor-pointer" data-filter="nonaktif" type="button">
+            </a>
+            <a href="{{ route('admin.buyers', array_filter(['filter' => 'nonaktif', 'search' => request('search')])) }}" class="h-10 px-5 rounded-full text-[14px] {{ $currentFilter === 'nonaktif' ? 'bg-[#E8F3E1] text-[#1F3318] font-semibold border border-[#CFE6C5]' : 'bg-white text-[#4A5246] border border-[#E4E9DA] hover:bg-[#F8FAF2] font-medium' }} transition-colors flex items-center cursor-pointer">
                 Nonaktif
-            </button>
+            </a>
         </div>
     </div>
 
@@ -49,284 +76,126 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[#E4E9DA]" id="buyer-table-body">
-                    <!-- Row 1: Rina -->
-                    <tr class="buyer-row h-16 hover:bg-[#F8FAF2] transition-colors" data-status="aktif" data-name="Rina" data-phone="0812-3456-7890">
-                        <td class="py-3 px-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#CFE6C5] flex items-center justify-center text-[14px] font-semibold text-[#1F3318] shrink-0">
-                                    R
+                    @forelse ($buyers as $b)
+                        <tr class="buyer-row h-16 hover:bg-[#F8FAF2] transition-colors {{ ! $b->is_active ? 'opacity-75' : '' }}">
+                            <td class="py-3 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-[#CFE6C5] flex items-center justify-center text-[14px] font-semibold text-[#1F3318] shrink-0">
+                                        {{ strtoupper(substr($b->name, 0, 1)) }}
+                                    </div>
+                                    <span class="text-[14px] font-semibold text-[#1F261D]">{{ $b->name }}</span>
                                 </div>
-                                <span class="text-[14px] font-semibold text-[#1F261D]">Rina</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#1F261D] font-medium font-mono">0812-3456-7890</td>
-                        <td class="py-3 px-6">
-                            <span class="block max-w-[220px] text-[14px] text-[#4A5246] truncate" title="Jl. Melati No. 18, Jakarta Selatan">
-                                Jl. Melati No. 18, Jakarta Selatan
-                            </span>
-                        </td>
-                        <td class="py-3 px-6 text-center text-[14px] font-semibold text-[#1F261D]">3</td>
-                        <td class="py-3 px-6 text-center">
-                            <x-badge-status type="aktif" />
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#6B7366]">12 Okt 2026</td>
-                        <td class="py-3 px-6 text-right">
-                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#1F261D] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openBuyerDrawer('Rina', '0812-3456-7890', 'Jl. Melati No. 18, Jakarta Selatan', true)" title="Ubah Pembeli" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#5C4A12] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openResetModal('Rina', '0812-3456-7890')" title="Reset Password" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">vpn_key</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#BA1A1A] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" title="Blokir Akun" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">block</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- Row 2: Budi -->
-                    <tr class="buyer-row h-16 hover:bg-[#F8FAF2] transition-colors" data-status="aktif" data-name="Budi" data-phone="0813-1111-2222">
-                        <td class="py-3 px-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#F2D98A] flex items-center justify-center text-[14px] font-semibold text-[#5C4A12] shrink-0">
-                                    B
+                            </td>
+                            <td class="py-3 px-6 text-[14px] text-[#1F261D] font-medium font-mono">{{ $b->phone }}</td>
+                            <td class="py-3 px-6">
+                                <span class="block max-w-[220px] text-[14px] text-[#4A5246] truncate" title="{{ $b->address }}">
+                                    {{ $b->address }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-6 text-center text-[14px] font-semibold text-[#1F261D]">
+                                {{ $b->orders_count ?? 0 }}
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <x-badge-status :type="$b->is_active ? 'aktif' : 'nonaktif'" />
+                            </td>
+                            <td class="py-3 px-6 text-[14px] text-[#6B7366]">
+                                {{ $b->created_at ? $b->created_at->format('d M Y') : '-' }}
+                            </td>
+                            <td class="py-3 px-6 text-right">
+                                <div class="inline-flex items-center gap-1.5 justify-end">
+                                    <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#1F261D] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openBuyerDrawer('{{ $b->id }}', '{{ addslashes($b->name) }}', '{{ $b->phone }}', '{{ addslashes($b->address) }}', {{ $b->is_active ? 'true' : 'false' }})" title="Ubah Pembeli" type="button">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </button>
+                                    <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#5C4A12] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openResetModal('{{ $b->id }}', '{{ addslashes($b->name) }}', '{{ $b->phone }}')" title="Reset Password" type="button">
+                                        <span class="material-symbols-outlined text-[18px]">vpn_key</span>
+                                    </button>
+                                    <form method="POST" action="{{ route('admin.buyers.toggle', $b->id) }}" class="inline">
+                                        @csrf
+                                        <button class="w-9 h-9 rounded-[12px] {{ $b->is_active ? 'bg-[#F8FAF2] hover:bg-white text-[#4A5246]' : 'bg-[#E3F1DC] hover:bg-[#cfe6c5] text-[#1F3318]' }} border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" title="{{ $b->is_active ? 'Nonaktifkan Akun' : 'Aktifkan Akun' }}" type="submit">
+                                            <span class="material-symbols-outlined text-[18px]">{{ $b->is_active ? 'person_off' : 'person' }}</span>
+                                        </button>
+                                    </form>
                                 </div>
-                                <span class="text-[14px] font-semibold text-[#1F261D]">Budi</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#1F261D] font-medium font-mono">0813-1111-2222</td>
-                        <td class="py-3 px-6">
-                            <span class="block max-w-[220px] text-[14px] text-[#4A5246] truncate" title="Jl. Kenanga No. 5, Bandung">
-                                Jl. Kenanga No. 5, Bandung
-                            </span>
-                        </td>
-                        <td class="py-3 px-6 text-center text-[14px] font-semibold text-[#1F261D]">1</td>
-                        <td class="py-3 px-6 text-center">
-                            <x-badge-status type="aktif" />
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#6B7366]">14 Okt 2026</td>
-                        <td class="py-3 px-6 text-right">
-                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#1F261D] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openBuyerDrawer('Budi', '0813-1111-2222', 'Jl. Kenanga No. 5, Bandung', true)" title="Ubah Pembeli" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#5C4A12] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openResetModal('Budi', '0813-1111-2222')" title="Reset Password" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">vpn_key</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#BA1A1A] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" title="Blokir Akun" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">block</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- Row 3: Sari -->
-                    <tr class="buyer-row h-16 hover:bg-[#F8FAF2] transition-colors" data-status="aktif" data-name="Sari" data-phone="0857-4444-5555">
-                        <td class="py-3 px-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#CFE6C5] flex items-center justify-center text-[14px] font-semibold text-[#1F3318] shrink-0">
-                                    S
-                                </div>
-                                <span class="text-[14px] font-semibold text-[#1F261D]">Sari</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#1F261D] font-medium font-mono">0857-4444-5555</td>
-                        <td class="py-3 px-6">
-                            <span class="block max-w-[220px] text-[14px] text-[#4A5246] truncate" title="Jl. Mawar No. 2, Surabaya">
-                                Jl. Mawar No. 2, Surabaya
-                            </span>
-                        </td>
-                        <td class="py-3 px-6 text-center text-[14px] font-semibold text-[#1F261D]">2</td>
-                        <td class="py-3 px-6 text-center">
-                            <x-badge-status type="aktif" />
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#6B7366]">15 Okt 2026</td>
-                        <td class="py-3 px-6 text-right">
-                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#1F261D] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openBuyerDrawer('Sari', '0857-4444-5555', 'Jl. Mawar No. 2, Surabaya', true)" title="Ubah Pembeli" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#5C4A12] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openResetModal('Sari', '0857-4444-5555')" title="Reset Password" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">vpn_key</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#BA1A1A] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" title="Blokir Akun" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">block</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- Row 4: Andi -->
-                    <tr class="buyer-row h-16 hover:bg-[#F8FAF2] transition-colors" data-status="nonaktif" data-name="Andi" data-phone="0821-9999-0000">
-                        <td class="py-3 px-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#F2D98A] flex items-center justify-center text-[14px] font-semibold text-[#5C4A12] shrink-0">
-                                    A
-                                </div>
-                                <span class="text-[14px] font-semibold text-[#1F261D]">Andi</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#1F261D] font-medium font-mono">0821-9999-0000</td>
-                        <td class="py-3 px-6">
-                            <span class="block max-w-[220px] text-[14px] text-[#4A5246] truncate" title="Jl. Anggrek No. 9, Semarang">
-                                Jl. Anggrek No. 9, Semarang
-                            </span>
-                        </td>
-                        <td class="py-3 px-6 text-center text-[14px] font-semibold text-[#1F261D]">0</td>
-                        <td class="py-3 px-6 text-center">
-                            <x-badge-status type="nonaktif" />
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#6B7366]">16 Okt 2026</td>
-                        <td class="py-3 px-6 text-right">
-                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#1F261D] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openBuyerDrawer('Andi', '0821-9999-0000', 'Jl. Anggrek No. 9, Semarang', false)" title="Ubah Pembeli" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#5C4A12] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openResetModal('Andi', '0821-9999-0000')" title="Reset Password" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">vpn_key</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#4E6B43] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" title="Aktifkan Akun" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- Row 5: Dewi -->
-                    <tr class="buyer-row h-16 hover:bg-[#F8FAF2] transition-colors" data-status="aktif" data-name="Dewi" data-phone="0878-1212-3434">
-                        <td class="py-3 px-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#CFE6C5] flex items-center justify-center text-[14px] font-semibold text-[#1F3318] shrink-0">
-                                    D
-                                </div>
-                                <span class="text-[14px] font-semibold text-[#1F261D]">Dewi</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#1F261D] font-medium font-mono">0878-1212-3434</td>
-                        <td class="py-3 px-6">
-                            <span class="block max-w-[220px] text-[14px] text-[#4A5246] truncate" title="Jl. Dahlia No. 7, Yogyakarta">
-                                Jl. Dahlia No. 7, Yogyakarta
-                            </span>
-                        </td>
-                        <td class="py-3 px-6 text-center text-[14px] font-semibold text-[#1F261D]">1</td>
-                        <td class="py-3 px-6 text-center">
-                            <x-badge-status type="aktif" />
-                        </td>
-                        <td class="py-3 px-6 text-[14px] text-[#6B7366]">18 Okt 2026</td>
-                        <td class="py-3 px-6 text-right">
-                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#1F261D] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openBuyerDrawer('Dewi', '0878-1212-3434', 'Jl. Dahlia No. 7, Yogyakarta', true)" title="Ubah Pembeli" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#5C4A12] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" onclick="openResetModal('Dewi', '0878-1212-3434')" title="Reset Password" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">vpn_key</span>
-                                </button>
-                                <button class="w-9 h-9 rounded-[12px] bg-[#F8FAF2] hover:bg-white text-[#BA1A1A] border border-[#E4E9DA] flex items-center justify-center transition-all cursor-pointer" title="Blokir Akun" type="button">
-                                    <span class="material-symbols-outlined text-[18px]">block</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-8 text-[#6B7366]">
+                                Belum ada akun pembeli yang terdaftar.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
-        </div>
-
-        <!-- Table Pagination Footer -->
-        <div class="py-4 px-6 flex items-center justify-between bg-white border-t border-[#E4E9DA]">
-            <span class="text-[14px] text-[#6B7366]">Menampilkan 1–5 dari 12</span>
-            <div class="flex items-center gap-1.5">
-                <button class="w-9 h-9 rounded-full bg-[#F8FAF2] hover:bg-[#E8E8E8] text-[#4A5246] flex items-center justify-center transition-colors" type="button">
-                    <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                </button>
-                <button class="w-9 h-9 rounded-full bg-[#E8F3E1] text-[#1F3318] text-[14px] font-semibold border border-[#CFE6C5] flex items-center justify-center" type="button">
-                    1
-                </button>
-                <button class="w-9 h-9 rounded-full hover:bg-[#F8FAF2] text-[#4A5246] text-[14px] font-medium flex items-center justify-center transition-colors" type="button">
-                    2
-                </button>
-                <button class="w-9 h-9 rounded-full hover:bg-[#F8FAF2] text-[#4A5246] text-[14px] font-medium flex items-center justify-center transition-colors" type="button">
-                    3
-                </button>
-                <button class="w-9 h-9 rounded-full bg-[#F8FAF2] hover:bg-[#E8E8E8] text-[#4A5246] flex items-center justify-center transition-colors" type="button">
-                    <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                </button>
-            </div>
         </div>
     </div>
 </div>
 
-<!-- Modal / Drawer Side Panel "Ubah Pembeli" (420px wide) -->
-<div class="fixed inset-0 z-50 flex justify-end hidden" id="drawer-container">
-    <!-- Backdrop Overlay -->
-    <div class="absolute inset-0 bg-[#1F261D]/25 backdrop-blur-[2px] transition-opacity duration-300" onclick="closeBuyerDrawer()"></div>
-
-    <!-- Right Drawer Surface -->
-    <div class="relative w-[420px] h-full bg-white shadow-[-8px_0_32px_rgba(40,52,30,0.12)] border-l border-[#E4E9DA] p-6 sm:p-8 flex flex-col justify-between overflow-y-auto z-10">
-        <div class="flex flex-col">
-            <!-- Drawer Header -->
-            <div class="flex items-center justify-between pb-6 mb-6 border-b border-[#E4E9DA]">
-                <h2 class="text-[20px] font-semibold text-[#1F261D]">Ubah Pembeli</h2>
-                <button class="w-8 h-8 rounded-[10px] hover:bg-[#F8FAF2] text-[#4A5246] flex items-center justify-center transition-colors cursor-pointer" onclick="closeBuyerDrawer()" type="button">
+<!-- ==================== DRAWER EDIT PEMBELI ==================== -->
+<div class="fixed inset-0 z-50 overflow-hidden hidden" id="drawer-container">
+    <div class="absolute inset-0 bg-[#1F261D]/30 backdrop-blur-[2px] transition-opacity" onclick="closeBuyerDrawer()"></div>
+    <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+        <div class="w-screen max-w-[480px] bg-white border-l border-[#E4E9DA] p-8 flex flex-col justify-between shadow-2xl">
+            <!-- Header Panel -->
+            <div class="flex items-center justify-between pb-6 border-b border-[#E4E9DA]">
+                <div>
+                    <h2 class="text-[20px] font-bold text-[#1F261D]" id="drawer-title">Ubah Data Pembeli</h2>
+                    <p class="text-[14px] text-[#6B7366] mt-0.5">Perbarui nama, nomor WhatsApp, atau alamat.</p>
+                </div>
+                <button class="w-9 h-9 rounded-[12px] hover:bg-[#F8FAF2] text-[#4A5246] flex items-center justify-center transition-colors cursor-pointer" onclick="closeBuyerDrawer()" type="button">
                     <span class="material-symbols-outlined text-[20px]">close</span>
                 </button>
             </div>
 
-            <!-- Drawer Form Elements -->
-            <div class="flex flex-col gap-5">
-                <!-- Field: Nama -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[14px] font-medium text-[#1F261D]" for="edit-name">Nama</label>
-                    <input class="w-full h-12 px-4 rounded-[12px] bg-white text-[14px] text-[#1F261D] border border-[#E4E9DA] placeholder-[#7A8275] focus:outline-none focus:border-[#B7D7A8] transition-all" id="edit-name" type="text" value="Rina">
-                </div>
+            <!-- Form Edit -->
+            <form id="buyerEditForm" method="POST" action="" class="flex-1 flex flex-col justify-between overflow-hidden">
+                @csrf
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="is_active" id="inputBuyerActiveHidden" value="1">
 
-                <!-- Field: Nomor WhatsApp -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[14px] font-medium text-[#1F261D]" for="edit-phone">Nomor WhatsApp</label>
-                    <input class="w-full h-12 px-4 rounded-[12px] bg-white text-[14px] text-[#1F261D] border border-[#E4E9DA] placeholder-[#7A8275] focus:outline-none focus:border-[#B7D7A8] transition-all" id="edit-phone" type="text" value="0812-3456-7890">
-                </div>
+                <div class="flex-1 overflow-y-auto py-6 space-y-5">
+                    <!-- Nama Lengkap -->
+                    <div class="space-y-1.5">
+                        <label class="text-[14px] font-medium text-[#1F261D]" for="edit-name">Nama Lengkap</label>
+                        <input class="w-full h-12 px-4 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] text-[14px] focus:outline-none focus:border-[#B7D7A8] transition-colors" id="edit-name" name="name" type="text" required>
+                    </div>
 
-                <!-- Field: Alamat -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[14px] font-medium text-[#1F261D]" for="edit-address">Alamat</label>
-                    <textarea class="w-full p-4 rounded-[12px] bg-white text-[14px] text-[#1F261D] border border-[#E4E9DA] placeholder-[#7A8275] resize-none focus:outline-none focus:border-[#B7D7A8] transition-all leading-relaxed" id="edit-address" rows="3">Jl. Melati No. 18, Jakarta Selatan</textarea>
-                </div>
+                    <!-- Nomor WhatsApp -->
+                    <div class="space-y-1.5">
+                        <label class="text-[14px] font-medium text-[#1F261D]" for="edit-phone">Nomor WhatsApp</label>
+                        <input class="w-full h-12 px-4 rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] text-[14px] font-mono focus:outline-none focus:border-[#B7D7A8] transition-colors" id="edit-phone" name="phone" type="text" required>
+                        <p class="text-[12px] text-[#6B7366]">Nomor WhatsApp harus unik.</p>
+                    </div>
 
-                <!-- Toggle: Akun Aktif -->
-                <div class="pt-2 flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[14px] font-medium text-[#1F261D]">Akun aktif</span>
+                    <!-- Alamat Lengkap -->
+                    <div class="space-y-1.5">
+                        <label class="text-[14px] font-medium text-[#1F261D]" for="edit-address">Alamat Lengkap</label>
+                        <textarea class="w-full rounded-[12px] border border-[#E4E9DA] bg-white text-[#1F261D] text-[14px] p-3 focus:outline-none focus:border-[#B7D7A8] resize-none transition-colors" id="edit-address" name="address" rows="3" required></textarea>
+                    </div>
+
+                    <!-- Status Akun Switch -->
+                    <div class="pt-2 border-t border-[#E4E9DA] flex items-center justify-between">
+                        <div>
+                            <span class="text-[14px] font-medium text-[#1F261D] block">Status Akun</span>
+                            <span class="text-[12px] text-[#6B7366]">Izinkan pembeli masuk</span>
+                        </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input checked="" class="sr-only peer" id="edit-status" type="checkbox">
+                            <input class="sr-only peer" id="edit-status" type="checkbox" onchange="document.getElementById('inputBuyerActiveHidden').value = this.checked ? '1' : '0'">
                             <div class="w-11 h-6 bg-[#E2E2E2] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#E4E9DA] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4E6B43]"></div>
                         </label>
                     </div>
-                    <p class="text-[12px] text-[#6B7366]">
-                        Akun nonaktif tidak bisa masuk. Riwayat pesanan tetap tersimpan.
-                    </p>
                 </div>
 
-                <!-- Reset Password Action Button -->
-                <div class="pt-3 pb-2 flex flex-col gap-2">
-                    <button class="w-full h-11 px-4 rounded-[14px] bg-white hover:bg-[#F8FAF2] text-[#1F261D] text-[14px] font-semibold border border-[#E4E9DA] flex items-center justify-center gap-2 transition-colors cursor-pointer" type="button" onclick="triggerResetFromDrawer()">
-                        <span class="material-symbols-outlined text-[#7A6420] text-[20px]">vpn_key</span>
-                        <span>Reset Password</span>
+                <!-- Action Footer Buttons -->
+                <div class="flex items-center gap-3 pt-6 border-t border-[#E4E9DA]">
+                    <button class="h-12 px-6 rounded-[14px] bg-white hover:bg-[#F8FAF2] text-[#1F261D] text-[14px] font-medium border border-[#E4E9DA] transition-colors cursor-pointer" onclick="closeBuyerDrawer()" type="button">
+                        Batal
                     </button>
-                    <p class="text-[12px] text-[#6B7366]">
-                        Admin menyetel password baru lalu mengirimkannya lewat WhatsApp.
-                    </p>
+                    <button class="flex-1 h-12 px-6 rounded-[14px] bg-[#F2D98A] hover:bg-[#ECDDA1] text-[#1F261D] text-[14px] font-semibold flex items-center justify-center transition-colors shadow-xs cursor-pointer" type="submit">
+                        Simpan
+                    </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Action Footer Buttons -->
-        <div class="flex items-center gap-3 pt-6 mt-6 border-t border-[#E4E9DA]">
-            <button class="h-12 px-6 rounded-[14px] bg-white hover:bg-[#F8FAF2] text-[#1F261D] text-[14px] font-medium border border-[#E4E9DA] transition-colors cursor-pointer" onclick="closeBuyerDrawer()" type="button">
-                Batal
-            </button>
-            <button class="flex-1 h-12 px-6 rounded-[14px] bg-[#F2D98A] hover:bg-[#ECDDA1] text-[#1F261D] text-[14px] font-semibold flex items-center justify-center transition-colors shadow-sm cursor-pointer" onclick="closeBuyerDrawer()" type="button">
-                Simpan
-            </button>
+            </form>
         </div>
     </div>
 </div>
@@ -334,52 +203,57 @@
 <!-- Modal Reset Password -->
 <div id="reset-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/40 backdrop-blur-[2px]">
     <div class="bg-white rounded-[20px] border border-[#E4E9DA] p-6 max-w-md w-full mx-4 shadow-xl">
-        <div class="flex items-center justify-between pb-3 border-b border-[#E4E9DA]">
-            <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#7A6420]">vpn_key</span>
-                <h3 class="text-[18px] font-bold text-[#1F261D]">Reset Password Pembeli</h3>
+        <form id="resetPasswordForm" method="POST" action="">
+            @csrf
+            <div class="flex items-center justify-between pb-3 border-b border-[#E4E9DA]">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#7A6420]">vpn_key</span>
+                    <h3 class="text-[18px] font-bold text-[#1F261D]">Reset Password Pembeli</h3>
+                </div>
+                <button type="button" onclick="closeResetModal()" class="w-8 h-8 rounded-[8px] hover:bg-[#F8FAF2] flex items-center justify-center text-[#4A5246] cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
             </div>
-            <button onclick="closeResetModal()" class="w-8 h-8 rounded-[8px] hover:bg-[#F8FAF2] flex items-center justify-center text-[#4A5246] cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">close</span>
-            </button>
-        </div>
-        <div class="py-4 space-y-4">
-            <p class="text-[14px] text-[#4A5246]">
-                Setel password sementara baru untuk akun pembeli <strong id="modal-buyer-name" class="text-[#1F261D]"></strong> (<span id="modal-buyer-phone" class="font-mono text-[13px]"></span>).
-            </p>
-            <div class="space-y-1.5">
-                <label class="text-[13px] font-medium text-[#1F261D]">Password Baru Sementara</label>
-                <input type="text" id="modal-new-password" value="duren12345" class="w-full h-11 px-3 rounded-[12px] border border-[#E4E9DA] bg-[#F8FAF2] text-[#1F261D] text-[14px] font-mono focus:outline-none focus:border-[#B7D7A8]">
+            <div class="py-4 space-y-4">
+                <p class="text-[14px] text-[#4A5246]">
+                    Setel password baru untuk akun <strong id="modal-buyer-name" class="text-[#1F261D]"></strong> (<span id="modal-buyer-phone" class="font-mono text-[13px]"></span>).
+                </p>
+                <div class="space-y-1.5">
+                    <label class="text-[13px] font-medium text-[#1F261D]">Password Baru Sementara</label>
+                    <input type="text" id="modal-new-password" name="new_password" value="duren12345" class="w-full h-11 px-3 rounded-[12px] border border-[#E4E9DA] bg-[#F8FAF2] text-[#1F261D] text-[14px] font-mono focus:outline-none focus:border-[#B7D7A8]" required minlength="8">
+                </div>
+                <p class="text-[12px] text-[#6B7366]">
+                    Setelah disimpan, Anda dapat menyalin password ini dan mengirimkannya ke WhatsApp pembeli.
+                </p>
             </div>
-            <p class="text-[12px] text-[#6B7366]">
-                Salin dan kirimkan password baru ini secara manual kepada pembeli melalui nomor WhatsApp terdaftar.
-            </p>
-        </div>
-        <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#E4E9DA]">
-            <button onclick="closeResetModal()" class="h-10 px-4 rounded-[12px] border border-[#E4E9DA] text-[13px] font-medium hover:bg-[#F8FAF2] transition-colors cursor-pointer">
-                Batal
-            </button>
-            <button onclick="sendViaWhatsApp()" class="h-10 px-5 rounded-[12px] bg-[#E8F3E1] hover:bg-[#D9E7D2] text-[#1F3318] text-[13px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer">
-                <span class="material-symbols-outlined text-[16px] text-[#4E6B43]">send</span>
-                <span>Kirim via WhatsApp</span>
-            </button>
-        </div>
+            <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#E4E9DA]">
+                <button type="button" onclick="closeResetModal()" class="h-10 px-4 rounded-[12px] border border-[#E4E9DA] text-[13px] font-medium hover:bg-[#F8FAF2] transition-colors cursor-pointer">
+                    Batal
+                </button>
+                <button type="submit" class="h-10 px-5 rounded-[12px] bg-[#F2D98A] hover:bg-[#ECDDA1] text-[#1F261D] text-[13px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs">
+                    <span class="material-symbols-outlined text-[16px]">save</span>
+                    <span>Simpan Password</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    function openBuyerDrawer(name, phone, address, isActive) {
-        const drawer = document.getElementById('drawer-container');
-        const nameInput = document.getElementById('edit-name');
-        const phoneInput = document.getElementById('edit-phone');
-        const addressInput = document.getElementById('edit-address');
-        const statusCheckbox = document.getElementById('edit-status');
+    let currentBuyerId = null;
 
-        if (nameInput) nameInput.value = name;
-        if (phoneInput) phoneInput.value = phone;
-        if (addressInput) addressInput.value = address;
-        if (statusCheckbox) statusCheckbox.checked = isActive;
+    function openBuyerDrawer(id, name, phone, address, isActive) {
+        currentBuyerId = id;
+        const drawer = document.getElementById('drawer-container');
+        const form = document.getElementById('buyerEditForm');
+        form.action = '{{ url("/admin/pembeli") }}/' + id;
+
+        document.getElementById('edit-name').value = name;
+        document.getElementById('edit-phone').value = phone;
+        document.getElementById('edit-address').value = address;
+        document.getElementById('edit-status').checked = isActive;
+        document.getElementById('inputBuyerActiveHidden').value = isActive ? '1' : '0';
 
         drawer.classList.remove('hidden');
     }
@@ -389,72 +263,17 @@
         drawer.classList.add('hidden');
     }
 
-    function openResetModal(name, phone) {
+    function openResetModal(id, name, phone) {
+        currentBuyerId = id;
         document.getElementById('modal-buyer-name').textContent = name;
         document.getElementById('modal-buyer-phone').textContent = phone;
+        document.getElementById('resetPasswordForm').action = '{{ url("/admin/pembeli") }}/' + id + '/reset-password';
         document.getElementById('reset-modal').classList.remove('hidden');
     }
 
     function closeResetModal() {
         document.getElementById('reset-modal').classList.add('hidden');
     }
-
-    function triggerResetFromDrawer() {
-        const name = document.getElementById('edit-name').value;
-        const phone = document.getElementById('edit-phone').value;
-        closeBuyerDrawer();
-        openResetModal(name, phone);
-    }
-
-    function sendViaWhatsApp() {
-        const phone = document.getElementById('modal-buyer-phone').textContent.replace(/[^0-9]/g, '');
-        const formattedPhone = phone.startsWith('0') ? '62' + phone.slice(1) : phone;
-        const password = document.getElementById('modal-new-password').value;
-        const message = encodeURIComponent(`Halo, password akun DuREN Anda telah direset menjadi: ${password}\nSilakan masuk kembali dan segera ganti password Anda.`);
-        window.open(`https://wa.me/${formattedPhone}?text=${message}`, '_blank');
-        closeResetModal();
-    }
-
-    // Filter & Search Script
-    (function() {
-        const chipButtons = document.querySelectorAll('.buyer-chip-btn');
-        const tableRows = document.querySelectorAll('.buyer-row');
-        const searchInput = document.getElementById('buyer-search-input');
-        let currentFilter = 'all';
-
-        function applyFilter() {
-            const query = (searchInput?.value || '').toLowerCase().trim();
-
-            tableRows.forEach(row => {
-                const status = (row.getAttribute('data-status') || '').toLowerCase();
-                const name = (row.getAttribute('data-name') || '').toLowerCase();
-                const phone = (row.getAttribute('data-phone') || '').toLowerCase();
-
-                const matchesFilter = currentFilter === 'all' || status === currentFilter;
-                const matchesSearch = !query || name.includes(query) || phone.includes(query);
-
-                if (matchesFilter && matchesSearch) {
-                    row.style.display = 'table-row';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-
-        chipButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                chipButtons.forEach(b => {
-                    b.className = 'buyer-chip-btn h-10 px-5 rounded-full text-[14px] font-medium bg-white text-[#4A5246] border border-[#E4E9DA] hover:bg-[#F8FAF2] transition-colors cursor-pointer';
-                });
-
-                btn.className = 'buyer-chip-btn h-10 px-5 rounded-full text-[14px] font-semibold bg-[#E8F3E1] text-[#1F3318] border border-[#CFE6C5] transition-colors cursor-pointer';
-                currentFilter = btn.getAttribute('data-filter') || 'all';
-                applyFilter();
-            });
-        });
-
-        searchInput?.addEventListener('input', applyFilter);
-    })();
 </script>
 @endpush
 @endsection
