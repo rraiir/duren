@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Product extends Model
 {
     /**
+     * Konstanta ukuran dan tipe produk durian.
+     */
+    public const SIZES = ['S', 'M', 'L'];
+    public const TYPE_READY = 'ready';
+    public const TYPE_PREORDER = 'preorder';
+    public const TYPES = [self::TYPE_READY, self::TYPE_PREORDER];
+    public const MIN_WEIGHT_GRAM = 100;
+    public const MIN_PRICE = 1000;
+
+    /**
      * The table associated with the model.
      *
      * @var string

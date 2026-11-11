@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -21,9 +23,9 @@ class ProductController extends Controller
 
         // Filter tipe / status
         if ($request->filter === 'ready') {
-            $query->where('type', 'ready')->where('is_active', true);
+            $query->where('type', Product::TYPE_READY)->where('is_active', true);
         } elseif ($request->filter === 'preorder') {
-            $query->where('type', 'preorder')->where('is_active', true);
+            $query->where('type', Product::TYPE_PREORDER)->where('is_active', true);
         } elseif ($request->filter === 'inactive') {
             $query->where('is_active', false);
         }
@@ -34,76 +36,36 @@ class ProductController extends Controller
     }
 
     /**
-     * Simpan durian baru.
+     * Simpan durian baru menggunakan Form Request.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $cleanPrice = (int) str_replace(['.', ',', ' '], '', $request->price);
+        $data = $request->validated();
+        $data['is_active'] = $request->boolean('is_active', true);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'size' => ['required', 'in:S,M,L'],
-            'est_weight_gram' => ['required', 'integer', 'min:100'],
-            'price' => ['required'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'type' => ['required', 'in:ready,preorder'],
-            'eta_text' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-        ], [
-            'name.required' => 'Nama varian wajib diisi.',
-            'size.required' => 'Ukuran wajib dipilih.',
-            'est_weight_gram.required' => 'Estimasi berat wajib diisi.',
-            'price.required' => 'Harga wajib diisi.',
-            'stock.required' => 'Stok wajib diisi.',
-            'type.required' => 'Tipe durian wajib dipilih.',
-        ]);
-
-        $validated['price'] = $cleanPrice;
-        $validated['is_active'] = $request->boolean('is_active', true);
-
-        if ($validated['type'] === 'ready') {
-            $validated['eta_text'] = null;
+        if ($data['type'] === Product::TYPE_READY) {
+            $data['eta_text'] = null;
         }
 
-        Product::create($validated);
+        Product::create($data);
 
         return redirect()->route('admin.durian')->with('success', 'Durian baru berhasil ditambahkan.');
     }
 
     /**
-     * Perbarui data durian.
+     * Perbarui data durian menggunakan Form Request.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
         $product = Product::findOrFail($id);
-        $cleanPrice = (int) str_replace(['.', ',', ' '], '', $request->price);
+        $data = $request->validated();
+        $data['is_active'] = $request->boolean('is_active', $product->is_active);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'size' => ['required', 'in:S,M,L'],
-            'est_weight_gram' => ['required', 'integer', 'min:100'],
-            'price' => ['required'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'type' => ['required', 'in:ready,preorder'],
-            'eta_text' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-        ], [
-            'name.required' => 'Nama varian wajib diisi.',
-            'size.required' => 'Ukuran wajib dipilih.',
-            'est_weight_gram.required' => 'Estimasi berat wajib diisi.',
-            'price.required' => 'Harga wajib diisi.',
-            'stock.required' => 'Stok wajib diisi.',
-            'type.required' => 'Tipe durian wajib dipilih.',
-        ]);
-
-        $validated['price'] = $cleanPrice;
-        $validated['is_active'] = $request->boolean('is_active', $product->is_active);
-
-        if ($validated['type'] === 'ready') {
-            $validated['eta_text'] = null;
+        if ($data['type'] === Product::TYPE_READY) {
+            $data['eta_text'] = null;
         }
 
-        $product->update($validated);
+        $product->update($data);
 
         return redirect()->route('admin.durian')->with('success', 'Data durian ' . $product->name . ' berhasil diperbarui.');
     }

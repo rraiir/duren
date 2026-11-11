@@ -139,7 +139,7 @@
                         {{ $latestOrder->orderItems->map(fn($i) => ($i->product->name ?? 'Durian') . ' ' . ($i->product->size ?? '') . ' ×' . $i->quantity)->join(', ') }}
                     </p>
                     <p class="text-[15px] font-bold text-[#1F261D]">
-                        Total: Rp {{ number_format($latestOrder->total_price, 0, ',', '.') }}
+                        Total: {{ numberToRupiah($latestOrder->total_price) }}
                     </p>
                 </div>
             @else
@@ -183,7 +183,7 @@
                             <span class="text-[12px] text-[#6B7366] block">{{ $oh->created_at->format('d M Y') }}</span>
                         </div>
                         <div class="text-right">
-                            <span class="text-[13px] font-semibold text-[#1F261D] block">Rp {{ number_format($oh->total_price, 0, ',', '.') }}</span>
+                            <span class="text-[13px] font-semibold text-[#1F261D] block">{{ numberToRupiah($oh->total_price) }}</span>
                             <x-badge-status :type="$oh->status" />
                         </div>
                     </a>

@@ -101,7 +101,7 @@
                 @endif
 
                 <div class="text-[24px] font-bold text-[#1F261D] mb-4">
-                    Rp {{ number_format($p->price, 0, ',', '.') }}
+                    {{ numberToRupiah($p->price) }}
                 </div>
             </div>
 

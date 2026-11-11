@@ -99,7 +99,7 @@
                                 {{ number_format($p->est_weight_gram, 0, ',', '.') }} gr
                             </td>
                             <td class="px-3 py-3 font-medium {{ $p->is_active ? 'text-[#1F261D]' : 'text-[#6B7366]' }}">
-                                Rp {{ number_format($p->price, 0, ',', '.') }}
+                                {{ numberToRupiah($p->price) }}
                             </td>
                             <td class="px-3 py-3 font-semibold {{ $p->stock <= 5 ? 'text-[#BA1A1A]' : ($p->is_active ? 'text-[#1F261D]' : 'text-[#7A8275]') }}">
                                 {{ $p->stock }}
@@ -157,6 +157,20 @@
 
         <!-- Body Drawer / Form -->
         <div class="p-6 overflow-y-auto flex-1 space-y-4">
+            @if ($errors->any())
+                <div class="p-4 rounded-[12px] bg-[#FFF0ED] border border-[#FFDAD6] text-[#BA1A1A] text-[13px] space-y-1">
+                    <p class="font-semibold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[18px]">error</span>
+                        Periksa kembali isian formulir:
+                    </p>
+                    <ul class="list-disc list-inside space-y-0.5 pl-1 text-[12px]">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form id="durianForm" method="POST" action="{{ route('admin.durian.store') }}" class="space-y-4">
                 @csrf
                 <input type="hidden" name="_method" id="durianFormMethod" value="POST">
@@ -370,5 +384,22 @@
     function toggleActiveStatus() {
         setActiveStatus(!currentActive);
     }
+
+    @if ($errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            openDrawer(
+                '',
+                '{{ addslashes(old("name", "")) }}',
+                '{{ old("size", "M") }}',
+                '{{ old("est_weight_gram", "1800") }}',
+                '{{ old("price", "250000") }}',
+                '{{ old("stock", "10") }}',
+                '{{ old("type", "ready") }}',
+                '{{ addslashes(old("eta_text", "")) }}',
+                '{{ addslashes(old("description", "")) }}',
+                {{ old("is_active", 1) ? 'true' : 'false' }}
+            );
+        });
+    @endif
 </script>
 @endsection

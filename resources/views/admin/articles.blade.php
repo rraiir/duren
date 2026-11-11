@@ -144,6 +144,20 @@
         <input type="hidden" name="is_published" id="inputIsPublishedHidden" value="1">
 
         <div class="flex-1 overflow-y-auto p-8 space-y-5">
+            @if ($errors->any())
+                <div class="p-4 rounded-[12px] bg-[#FFF0ED] border border-[#FFDAD6] text-[#BA1A1A] text-[13px] space-y-1">
+                    <p class="font-semibold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[18px]">error</span>
+                        Periksa kembali isian formulir:
+                    </p>
+                    <ul class="list-disc list-inside space-y-0.5 pl-1 text-[12px]">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Field: Judul -->
             <div class="flex flex-col gap-1.5">
                 <label class="text-[14px] font-medium text-[#1F261D]" for="input-article-title">Judul</label>

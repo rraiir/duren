@@ -94,8 +94,9 @@
                 <a href="{{ url('/daftar') }}" class="text-[14px] font-medium text-[#1F261D] hover:text-[#7A6420] transition-colors">Daftar</a>
             </nav>
 
-            <div class="text-[14px] text-[#6B7366] font-medium">
-                © 2026 DuREN
+            <div class="text-[14px] text-[#6B7366] font-medium text-center md:text-right">
+                <div>© 2026 {{ $namaSistem ?? 'DuREN' }}</div>
+                <div class="text-[12px] text-[#7A8275]">{{ $taglineSistem ?? 'Pusat Durian Utuh' }}</div>
             </div>
         </div>
     </footer>

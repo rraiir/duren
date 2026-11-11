@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateBuyerRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class BuyerController extends Controller
 {
@@ -41,37 +41,16 @@ class BuyerController extends Controller
     }
 
     /**
-     * Perbarui data pembeli.
+     * Perbarui data pembeli menggunakan Form Request.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBuyerRequest $request, $id)
     {
         $buyer = User::where('role', 'buyer')->findOrFail($id);
-
-        $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
-        if (str_starts_with($cleanPhone, '0')) {
-            $normalizedPhone = '62' . substr($cleanPhone, 1);
-        } elseif (str_starts_with($cleanPhone, '8')) {
-            $normalizedPhone = '62' . $cleanPhone;
-        } else {
-            $normalizedPhone = $cleanPhone;
-        }
-
-        $request->merge(['phone' => $normalizedPhone]);
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', Rule::unique('users', 'phone')->ignore($buyer->id)],
-            'address' => ['required', 'string'],
-        ], [
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'phone.required' => 'Nomor WhatsApp wajib diisi.',
-            'phone.unique' => 'Nomor WhatsApp ini sudah digunakan oleh akun lain.',
-            'address.required' => 'Alamat lengkap wajib diisi.',
-        ]);
+        $validated = $request->validated();
 
         $buyer->update([
             'name' => trim($validated['name']),
-            'phone' => $normalizedPhone,
+            'phone' => $validated['phone'],
             'address' => trim($validated['address']),
             'is_active' => $request->boolean('is_active', $buyer->is_active),
         ]);

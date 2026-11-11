@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     /**
+     * Konstanta artikel.
+     */
+    public const MAX_TITLE_LENGTH = 150;
+    public const MAX_SUMMARY_LENGTH = 255;
+    public const MAX_COVER_KB = 2048;
+
+    /**
      * The table associated with the model.
      *
      * @var string

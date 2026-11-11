@@ -9,6 +9,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     /**
+     * Konstanta status dan batasan pesanan.
+     */
+    public const STATUS_WAITING_PAYMENT = 'waiting_payment';
+    public const STATUS_WAITING_VERIFICATION = 'waiting_verification';
+    public const STATUS_PROCESSING = 'processing';
+    public const STATUS_SHIPPED = 'shipped';
+    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const PAY_DEADLINE_MINUTES = 15;
+    public const MAX_PROOF_UPLOADS = 2;
+
+    /**
      * The table associated with the model.
      *
      * @var string

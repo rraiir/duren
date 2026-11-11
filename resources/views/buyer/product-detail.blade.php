@@ -49,7 +49,7 @@
 
             <div class="flex items-baseline gap-3 mt-6">
                 <span class="text-[36px] font-bold text-[#1F261D]">
-                    Rp {{ number_format($product->price, 0, ',', '.') }}
+                    {{ numberToRupiah($product->price) }}
                 </span>
                 <span class="text-[14px] text-[#6B7366]">
                     Harga per buah
@@ -168,7 +168,7 @@
                     </div>
                     <div class="flex items-baseline justify-between pt-3 border-t border-[#E4E9DA]">
                         <span class="text-[13px] text-[#6B7366]">Est. {{ number_format($op->est_weight_gram / 1000, 1, ',', '.') }} kg</span>
-                        <span class="text-[18px] font-bold text-[#1F261D]">Rp {{ number_format($op->price, 0, ',', '.') }}</span>
+                        <span class="text-[18px] font-bold text-[#1F261D]">{{ numberToRupiah($op->price) }}</span>
                     </div>
                 </a>
             @endforeach

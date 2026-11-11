@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -34,23 +36,11 @@ class ArticleController extends Controller
     }
 
     /**
-     * Simpan artikel baru.
+     * Simpan artikel baru menggunakan Form Request.
      */
-    public function store(Request $request)
+    public function store(StoreArticleRequest $request)
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:150'],
-            'summary' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'cover' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
-        ], [
-            'title.required' => 'Judul artikel wajib diisi.',
-            'summary.required' => 'Ringkasan artikel wajib diisi.',
-            'body.required' => 'Isi artikel wajib diisi.',
-            'cover.image' => 'Berkas sampul harus berupa gambar (JPG atau PNG).',
-            'cover.max' => 'Ukuran sampul maksimal 2 MB.',
-        ]);
-
+        $validated = $request->validated();
         $isPublished = $request->boolean('is_published');
         $coverPath = null;
 
@@ -71,25 +61,12 @@ class ArticleController extends Controller
     }
 
     /**
-     * Perbarui artikel.
+     * Perbarui artikel menggunakan Form Request.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateArticleRequest $request, $id)
     {
         $article = Article::findOrFail($id);
-
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:150'],
-            'summary' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'cover' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
-        ], [
-            'title.required' => 'Judul artikel wajib diisi.',
-            'summary.required' => 'Ringkasan artikel wajib diisi.',
-            'body.required' => 'Isi artikel wajib diisi.',
-            'cover.image' => 'Berkas sampul harus berupa gambar (JPG atau PNG).',
-            'cover.max' => 'Ukuran sampul maksimal 2 MB.',
-        ]);
-
+        $validated = $request->validated();
         $isPublished = $request->boolean('is_published');
 
         if ($request->hasFile('cover')) {

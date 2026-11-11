@@ -52,7 +52,7 @@
         <!-- Kartu 4: Omzet Bulan Ini -->
         <x-card-stat 
             title="Omzet<br>Bulan Ini"
-            :value="'Rp ' . number_format($monthlyRevenue, 0, ',', '.')"
+            :value="numberToRupiah($monthlyRevenue)"
             caption="Pesanan Selesai"
             badgeText="Selesai"
             badgeClass="bg-[#DDEDCF] border border-[#C3DCAF] text-[#3F5B34]"

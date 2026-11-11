@@ -127,7 +127,7 @@
                                 <span class="block max-w-[240px] truncate" title="{{ $itemSummaries }}">{{ $itemSummaries }}</span>
                             </td>
                             <td class="px-3 font-semibold text-[#1F261D]">
-                                Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                {{ numberToRupiah($order->total_price) }}
                             </td>
                             <td class="px-3">
                                 <x-badge-status :type="$order->type" />
