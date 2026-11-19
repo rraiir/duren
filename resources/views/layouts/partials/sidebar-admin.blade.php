@@ -10,6 +10,7 @@
     $isArtikelActive = request()->is('admin/artikel*');
     $isLaporanActive = request()->is('admin/laporan*');
     $isPengaturanActive = request()->is('admin/pengaturan*');
+    $isProfileActive = request()->is('admin/profil*');
 @endphp
 
 <!-- SIDEBAR ADMIN TETAP 260px -->
@@ -61,6 +62,12 @@
         <a href="{{ url('/admin/pengaturan') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isPengaturanActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
             <span class="material-symbols-outlined text-[20px] {{ $isPengaturanActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">settings</span>
             <span class="text-[15px]">Pengaturan</span>
+        </a>
+
+        <!-- 9. Profil Admin -->
+        <a href="{{ route('admin.profile') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isProfileActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
+            <span class="material-symbols-outlined text-[20px] {{ $isProfileActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">manage_accounts</span>
+            <span class="text-[15px]">Profil</span>
         </a>
     </nav>
 </aside>

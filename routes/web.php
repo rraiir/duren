@@ -36,6 +36,7 @@ Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->nam
 // Area Pembeli (wajib login & peran buyer)
 Route::middleware(['auth', 'buyer'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'buyerDashboard'])->name('buyer.dashboard');
+    Route::get('/profil', [DashboardController::class, 'profile'])->name('buyer.profile');
 
     Route::get('/katalog', [CatalogController::class, 'index'])->name('buyer.catalog');
     Route::get('/katalog/{id}', [CatalogController::class, 'show'])->name('buyer.product.show');
@@ -72,6 +73,7 @@ Route::middleware(['auth', 'buyer'])->group(function () {
 // Area Admin (wajib login & peran admin)
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
+    Route::get('/profil', [DashboardController::class, 'profile'])->name('admin.profile');
 
     // 1. Kelola Durian (Produk) - CRUD
     Route::get('/durian', [ProductController::class, 'index'])->name('admin.durian');

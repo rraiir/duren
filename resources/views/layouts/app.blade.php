@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body class="relative min-h-screen w-full bg-white text-[#1F261D] overflow-x-hidden font-sans">
 
@@ -34,9 +35,39 @@
 
         <!-- WRAPPER KONTEN (z-10 di atas ornamen blur) -->
         <div class="relative z-10">
+            {{-- Pesan flash terpusat --}}
+            @if(session('success'))
+                <div id="flash-success" class="mb-6 flex items-start gap-3 px-4 py-3 rounded-[14px] bg-[#CDEBD9] border border-[#ABD9C0] text-[#1F3318]">
+                    <span class="material-symbols-outlined text-[20px] mt-0.5 shrink-0">check_circle</span>
+                    <span class="text-[14px] font-medium leading-[20px]">{{ session('success') }}</span>
+                    <button onclick="document.getElementById('flash-success').remove()" class="ml-auto text-[#1F3318] hover:opacity-70 shrink-0 cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div id="flash-error" class="mb-6 flex items-start gap-3 px-4 py-3 rounded-[14px] bg-[#FBDDC6] border border-[#EFC3A3] text-[#8C4A1A]">
+                    <span class="material-symbols-outlined text-[20px] mt-0.5 shrink-0">error</span>
+                    <span class="text-[14px] font-medium leading-[20px]">{{ session('error') }}</span>
+                    <button onclick="document.getElementById('flash-error').remove()" class="ml-auto text-[#8C4A1A] hover:opacity-70 shrink-0 cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+            @endif
+            @if(session('info'))
+                <div id="flash-info" class="mb-6 flex items-start gap-3 px-4 py-3 rounded-[14px] bg-[#E3F1DC] border border-[#B7D7A8] text-[#1F3318]">
+                    <span class="material-symbols-outlined text-[20px] mt-0.5 shrink-0">info</span>
+                    <span class="text-[14px] font-medium leading-[20px]">{{ session('info') }}</span>
+                    <button onclick="document.getElementById('flash-info').remove()" class="ml-auto text-[#1F3318] hover:opacity-70 shrink-0 cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+            @endif
+
             @yield('content')
         </div>
     </main>
 
 </body>
 </html>
+@stack('scripts')

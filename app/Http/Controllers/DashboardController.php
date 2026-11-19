@@ -36,6 +36,35 @@ class DashboardController extends Controller
     }
 
     /**
+     * Tampilkan halaman profil pengguna yang sedang login.
+     */
+    public function profile()
+    {
+        $user = Auth::user();
+        $totalOrders = 0;
+        $completedOrders = 0;
+        $activeOrders = 0;
+        $cancelledOrders = 0;
+
+        if ($user->isBuyer()) {
+            $totalOrders     = Order::where('user_id', $user->id)->count();
+            $completedOrders = Order::where('user_id', $user->id)->where('status', 'completed')->count();
+            $activeOrders    = Order::where('user_id', $user->id)
+                ->whereIn('status', ['waiting_payment', 'waiting_verification', 'waiting_shipping_fee', 'processing', 'shipped'])
+                ->count();
+            $cancelledOrders = Order::where('user_id', $user->id)->where('status', 'cancelled')->count();
+        }
+
+        return view('buyer.profile', compact(
+            'user',
+            'totalOrders',
+            'completedOrders',
+            'activeOrders',
+            'cancelledOrders'
+        ));
+    }
+
+    /**
      * Tampilkan dashboard ringkasan untuk pembeli.
      */
     public function buyerDashboard()

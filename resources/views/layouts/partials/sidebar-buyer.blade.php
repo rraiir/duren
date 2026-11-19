@@ -4,6 +4,7 @@
     $isCartActive = (isset($activeMenu) && $activeMenu === 'keranjang') || request()->is('keranjang*');
     $isOrdersActive = (isset($activeMenu) && $activeMenu === 'pesanan') || request()->is('pesanan*');
     $isRulesActive = (isset($activeMenu) && $activeMenu === 'aturan-garansi') || request()->is('aturan-garansi*');
+    $isProfileActive = (isset($activeMenu) && $activeMenu === 'profil') || request()->is('profil');
 @endphp
 
 <!-- SIDEBAR PEMBELI TETAP 260px -->
@@ -37,6 +38,12 @@
         <a href="{{ url('/aturan-garansi') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isRulesActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
             <span class="material-symbols-outlined text-[20px] {{ $isRulesActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">verified_user</span>
             <span class="text-[15px]">Aturan & Garansi</span>
+        </a>
+
+        <!-- 6. Profil Saya -->
+        <a href="{{ route('buyer.profile') }}" class="h-12 rounded-[14px] px-4 flex items-center space-x-3 transition-all {{ $isProfileActive ? 'bg-[#E3F1DC] text-[#1F3318] font-semibold' : 'text-[#1F261D] hover:bg-[#F8FAF2] hover:text-[#1F3318] font-normal' }}">
+            <span class="material-symbols-outlined text-[20px] {{ $isProfileActive ? 'text-[#1F3318]' : 'text-[#4A5246]' }}">manage_accounts</span>
+            <span class="text-[15px]">Profil Saya</span>
         </a>
     </nav>
 </aside>
