@@ -90,9 +90,10 @@
             @endif
 
             <hr class="border-t border-[#E4E9DA] my-6">
+        </div>
 
-            <!-- Form Pemesanan & Modul Tawar Harga inDrive -->
-            <form id="orderForm" method="GET" action="{{ route('buyer.checkout') }}" class="space-y-6">
+        <!-- Form Pemesanan & Modul Tawar Harga inDrive -->
+        <form id="orderForm" method="GET" action="{{ route('buyer.checkout') }}" class="space-y-6">
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="quantity" id="inputQuantity" value="1">
                 <input type="hidden" name="is_negotiated" id="inputIsNego" value="0">
