@@ -33,17 +33,17 @@
 
             <div id="address-display">
                 <div class="flex items-center gap-2 mb-1.5">
-                    <span class="font-semibold text-[15px] text-[#1F261D]">Rina</span>
+                    <span class="font-semibold text-[15px] text-[#1F261D]">{{ auth()->user()->name ?? 'Nafis Ardiansyah' }}</span>
                     <span class="text-[#7A8275]">•</span>
-                    <span class="text-[14px] text-[#4A5246] font-mono">0812-3456-7890</span>
+                    <span class="text-[14px] text-[#4A5246] font-mono">{{ auth()->user()->phone ?? '0812-3456-7890' }}</span>
                 </div>
                 <p class="text-[14px] text-[#4A5246] leading-relaxed" id="address-text">
-                    Jl. Melati No. 18, Cilandak Barat, Jakarta Selatan, DKI Jakarta 12430
+                    {{ auth()->user()->address ?? 'Jl. Merdeka No. 12, Kepanjenkidul, Blitar' }}
                 </p>
             </div>
 
             <div id="address-edit" class="hidden mt-3">
-                <textarea class="w-full p-3 rounded-[12px] border border-[#E4E9DA] text-[14px] text-[#1F261D] focus:outline-none focus:border-[#B7D7A8]" rows="3" id="address-input">Jl. Melati No. 18, Cilandak Barat, Jakarta Selatan, DKI Jakarta 12430</textarea>
+                <textarea class="w-full p-3 rounded-[12px] border border-[#E4E9DA] text-[14px] text-[#1F261D] focus:outline-none focus:border-[#B7D7A8]" rows="3" id="address-input">{{ auth()->user()->address ?? 'Jl. Merdeka No. 12, Kepanjenkidul, Blitar' }}</textarea>
                 <div class="flex justify-end gap-2 mt-2">
                     <button type="button" class="px-4 py-1.5 rounded-[10px] border border-[#E4E9DA] text-[13px] hover:bg-[#F8FAF2]" onclick="toggleEditAddress()">Batal</button>
                     <button type="button" class="px-4 py-1.5 rounded-[10px] bg-[#E3F1DC] text-[#1F3318] font-semibold text-[13px]" onclick="saveAddress()">Simpan</button>
@@ -114,6 +114,15 @@
                 <div class="flex items-center justify-between text-[14px]">
                     <span class="text-[#4A5246]">Ongkos Kirim</span>
                     <span class="text-[12px] font-semibold text-[#7A6420] bg-[#FAF1CE] px-2 py-0.5 rounded-full">Dikonfirmasi via WA</span>
+                </div>
+                <div class="p-3 rounded-[12px] bg-[#F8FAF2] border border-[#E4E9DA] text-[12px] text-[#4A5246] space-y-1.5 leading-relaxed">
+                    <p class="text-[#6B7366]">
+                        💡 <strong>Alur Ongkir:</strong> Admin akan menghubungi WhatsApp Anda ({{ auth()->user()->phone ?? '628123456701' }}) setelah pembayaran durian diverifikasi untuk menyepakati kurir & ongkir.
+                    </p>
+                    <a href="https://wa.me/{{ $waAdminSistem ?? '62881081111833' }}?text=Halo%20Admin%20DuREN,%20saya%20mau%20konfirmasi%20ongkos%20kirim%20pesanan%20saya" target="_blank" class="inline-flex items-center gap-1.5 text-[#2E7D32] font-semibold hover:underline">
+                        <span class="material-symbols-outlined text-[15px]">chat</span>
+                        <span>Chat WhatsApp Admin ({{ $waAdminSistem ?? '62881081111833' }})</span>
+                    </a>
                 </div>
                 <div class="flex items-center justify-between text-[16px] pt-2 border-t border-[#E4E9DA]">
                     <span class="font-semibold text-[#1F261D]">Total Pembayaran</span>
