@@ -45,21 +45,17 @@ Route::middleware(['auth', 'buyer'])->group(function () {
         return view('buyer.cart');
     })->name('buyer.cart');
 
-    Route::get('/checkout', function () {
-        return view('buyer.checkout');
-    })->name('buyer.checkout');
+    Route::get('/checkout', [OrderController::class, 'showCheckout'])->name('buyer.checkout');
+    Route::post('/checkout', [OrderController::class, 'processCheckout'])->name('buyer.checkout.process');
 
     Route::get('/pembayaran/{code?}', function ($code = 'DRN-0042') {
         return view('buyer.payment', ['code' => $code]);
     })->name('buyer.payment');
 
-    Route::get('/pesanan-saya', function () {
-        return view('buyer.orders');
-    })->name('buyer.orders');
+    Route::get('/pesanan-saya', [OrderController::class, 'buyerOrders'])->name('buyer.orders');
 
-    Route::get('/pesanan-saya/{code}', function ($code) {
-        return view('buyer.order-detail', ['code' => $code]);
-    })->name('buyer.orders.show');
+    Route::get('/pesanan-saya/{code}', [OrderController::class, 'buyerOrderDetail'])->name('buyer.orders.show');
+    Route::post('/pesanan-saya/{code}/ulasan', [OrderController::class, 'storeReview'])->name('buyer.review.store');
 
     Route::get('/pesanan', function () {
         return redirect('/pesanan-saya');
@@ -86,6 +82,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/pesanan/{code}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::post('/pesanan/{code}/verify', [OrderController::class, 'verify'])->name('admin.orders.verify');
     Route::put('/pesanan/{code}/shipping', [OrderController::class, 'updateShipping'])->name('admin.orders.shipping');
+    Route::post('/pesanan/{code}/nego/approve', [OrderController::class, 'approveNegotiation'])->name('admin.orders.nego.approve');
+    Route::post('/pesanan/{code}/nego/reject', [OrderController::class, 'rejectNegotiation'])->name('admin.orders.nego.reject');
 
     Route::get('/verifikasi-bayar', [OrderController::class, 'index'])->name('admin.verification');
 

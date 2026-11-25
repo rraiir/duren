@@ -5,6 +5,7 @@
 
 @php
     $classes = match(strtolower($type)) {
+        'waiting_price_approval', 'menunggu approval harga', 'menunggu approval admin', 'nego' => 'bg-[#FAF1CE] text-[#7A6420] border border-[#ECDDA1]',
         'waiting_verification', 'perlu verifikasi', 'menunggu verifikasi' => 'bg-[#F2D98A] text-[#5C4A12]',
         'waiting_payment', 'menunggu pembayaran' => 'bg-[#FBEFB5] text-[#5C4A12]',
         'waiting_shipping_fee', 'menunggu ongkir' => 'bg-[#FAF1CE] text-[#7A6420]',
@@ -26,6 +27,7 @@
     $displayLabel = $label ?? $slot->toHtml();
     if (empty($displayLabel)) {
         $displayLabel = match(strtolower($type)) {
+            'waiting_price_approval' => 'Menunggu Approval Harga',
             'waiting_verification' => 'Menunggu Verifikasi',
             'waiting_payment' => 'Menunggu Pembayaran',
             'waiting_shipping_fee' => 'Menunggu Ongkir',

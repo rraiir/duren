@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Product;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -15,6 +16,7 @@ class PublicController extends Controller
     {
         // 3 produk aktif
         $featuredProducts = Product::where('is_active', true)
+            ->with('reviews')
             ->orderBy('name')
             ->take(3)
             ->get();
@@ -25,7 +27,14 @@ class PublicController extends Controller
             ->take(3)
             ->get();
 
-        return view('landing', compact('featuredProducts', 'latestArticles'));
+        // Ulasan pembeli riil untuk testimoni
+        $customerReviews = Review::with(['user', 'product'])
+            ->where('rating', '>=', 4)
+            ->orderByDesc('created_at')
+            ->take(3)
+            ->get();
+
+        return view('landing', compact('featuredProducts', 'latestArticles', 'customerReviews'));
     }
 
     /**

@@ -21,12 +21,12 @@
 
     @if($role === 'admin')
         @include('layouts.partials.sidebar-admin')
+        <!-- AREA KONTEN ADMIN (Padding kiri 260px untuk sidebar admin) -->
+        <main class="ml-[260px] mt-[72px] p-[48px] max-w-[1440px] relative bg-white min-h-[calc(100vh-72px)]">
     @else
-        @include('layouts.partials.sidebar-buyer')
+        <!-- AREA KONTEN PEMBELI (Toko Modern Consumer, Lebar Penuh Tanpa Sidebar Kaku) -->
+        <main class="max-w-[1240px] mx-auto mt-[72px] px-6 py-8 relative bg-white min-h-[calc(100vh-72px)]">
     @endif
-
-    <!-- AREA KONTEN UTAMA (Max 1440px, padding kiri 260px, atas 72px) -->
-    <main class="ml-[260px] mt-[72px] p-[48px] max-w-[1440px] relative bg-white min-h-[calc(100vh-72px)]">
         <!-- LINGKARAN BLUR DEKORATIF LATAR BELAKANG -->
         <!-- Kanan atas: hijau #E3F1DC (144px, opacity 60%) -->
         <div class="pointer-events-none absolute top-8 right-16 w-[144px] h-[144px] rounded-full bg-[#E3F1DC] opacity-60 blur-2xl z-0"></div>

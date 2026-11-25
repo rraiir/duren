@@ -79,13 +79,11 @@ class AuthController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'regex:/^(08|628|\+628)[0-9]{8,13}$/'],
-            'address' => ['required', 'string'],
             'password' => ['required', 'string', 'min:8'],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'phone.required' => 'Nomor WhatsApp wajib diisi.',
             'phone.regex' => 'Format nomor WhatsApp harus diawali 08 atau 62 (contoh: 081234567890).',
-            'address.required' => 'Alamat lengkap wajib diisi.',
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 8 karakter.',
         ]);
@@ -108,7 +106,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => trim($request->name),
             'phone' => $normalizedPhone,
-            'address' => trim($request->address),
+            'address' => null,
             'password' => $request->password,
             'role' => 'buyer',
             'is_active' => true,

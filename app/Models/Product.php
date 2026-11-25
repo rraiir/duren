@@ -73,6 +73,39 @@ class Product extends Model
     }
 
     /**
+     * Relasi ke ulasan pembeli.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Dapatkan rata-rata rating bintang produk (skala 1-5).
+     */
+    public function getAverageRatingAttribute(): float
+    {
+        $avg = $this->reviews()->avg('rating');
+        return $avg ? round($avg, 1) : 5.0;
+    }
+
+    /**
+     * Dapatkan total jumlah ulasan produk.
+     */
+    public function getReviewCountAttribute(): int
+    {
+        return $this->reviews()->count();
+    }
+
+    /**
+     * Batas harga minimal yang boleh ditawar pembeli (maksimal diskon tawar 15%).
+     */
+    public function getMinNegotiationPriceAttribute(): int
+    {
+        return (int) (round(($this->price * 0.85) / 5000) * 5000);
+    }
+
+    /**
      * Cek apakah tipe produk adalah ready stock.
      */
     public function isReady(): bool

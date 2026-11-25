@@ -92,22 +92,6 @@
                     @enderror
                 </div>
 
-                <!-- Input Alamat Lengkap -->
-                <div>
-                    <label class="block text-[14px] font-medium text-[#1F261D] mb-1.5 leading-[20px]">
-                        Alamat lengkap
-                    </label>
-                    <div class="relative">
-                        <textarea class="w-full rounded-[12px] border @error('address') border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 @else border-[#E4E9DA] focus:border-[#F2D98A] focus:ring-2 focus:ring-[#FAF1CE] @enderror bg-white text-[#1F261D] placeholder-[#7A8275] text-[14px] leading-[20px] p-3 focus:outline-none transition resize-none" name="address" placeholder="Jalan, nomor, RT/RW, kelurahan, kota" rows="3" required>{{ old('address') }}</textarea>
-                    </div>
-                    @error('address')
-                        <p class="text-[12px] text-red-600 mt-1 font-medium leading-[17px] flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[15px]">error</span>
-                            <span>{{ $message }}</span>
-                        </p>
-                    @enderror
-                </div>
-
                 <!-- Input Password -->
                 <div>
                     <label class="block text-[14px] font-medium text-[#1F261D] mb-1.5 leading-[20px]">

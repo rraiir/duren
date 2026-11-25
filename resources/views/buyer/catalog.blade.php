@@ -93,6 +93,20 @@
                     <span class="text-[14px] text-[#4A5246] font-medium">Est. {{ number_format($p->est_weight_gram / 1000, 1, ',', '.') }} kg</span>
                 </div>
 
+                <!-- Rating Bintang & Badge Best Seller -->
+                <div class="flex items-center gap-1.5 mb-3">
+                    <div class="flex items-center text-[#E5A000]">
+                        <span class="material-symbols-outlined text-[16px] fill-current">star</span>
+                        <span class="text-[13px] font-bold text-[#1F261D] ml-0.5">{{ number_format($p->average_rating, 1) }}</span>
+                    </div>
+                    <span class="text-[12px] text-[#7A8275]">({{ $p->review_count }} ulasan)</span>
+                    @if($loop->iteration <= 2)
+                        <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FBEFB5] text-[#7A6420]">
+                            🔥 Best Seller
+                        </span>
+                    @endif
+                </div>
+
                 @if($p->type === 'preorder' && $p->eta_text)
                     <p class="text-[12px] text-[#7A6420] mb-3 flex items-center gap-1 font-medium">
                         <span class="material-symbols-outlined text-[15px]">event</span>
@@ -100,25 +114,26 @@
                     </p>
                 @endif
 
-                <div class="text-[24px] font-bold text-[#1F261D] mb-4">
-                    {{ numberToRupiah($p->price) }}
+                <div class="flex items-baseline justify-between mb-4">
+                    <div class="text-[24px] font-bold text-[#1F261D]">
+                        {{ numberToRupiah($p->price) }}
+                    </div>
+                    <span class="text-[11px] font-medium text-[#2E7D32] bg-[#E8F5E9] px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[13px]">handshake</span>
+                        <span>Bisa Nego</span>
+                    </span>
                 </div>
             </div>
 
-            <div class="pt-4 border-t border-[#E4E9DA] flex items-center gap-3" onclick="event.stopPropagation()">
+            <div class="pt-4 border-t border-[#E4E9DA] flex items-center gap-2" onclick="event.stopPropagation()">
                 @if($p->stock > 0)
-                    <div class="flex items-center border border-[#E4E9DA] rounded-[10px] bg-white p-0.5">
-                        <button type="button" class="w-8 h-8 rounded-[8px] flex items-center justify-center hover:bg-[#F8FAF2] text-[#4A5246] transition-colors" onclick="changeQty(this, -1)">
-                            <span class="material-symbols-outlined text-[16px]">remove</span>
-                        </button>
-                        <span class="w-8 text-center text-[14px] font-semibold text-[#1F261D] select-none qty-number">1</span>
-                        <button type="button" class="w-8 h-8 rounded-[8px] flex items-center justify-center hover:bg-[#F8FAF2] text-[#4A5246] transition-colors" onclick="changeQty(this, 1)">
-                            <span class="material-symbols-outlined text-[16px]">add</span>
-                        </button>
-                    </div>
-                    <a href="{{ route('buyer.cart') }}" class="flex-1 h-10 rounded-[12px] bg-[#F2D98A] hover:bg-[#ECDDA1] text-[#1F261D] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                        <span>Tambah</span>
+                    <a href="{{ route('buyer.product.show', $p->id) }}" class="flex-1 h-10 rounded-[12px] bg-[#F8FAF2] hover:bg-[#F1F5E8] border border-[#E4E9DA] text-[#1F261D] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                        <span class="material-symbols-outlined text-[17px] text-[#4E6B43]">handshake</span>
+                        <span>Tawar Harga</span>
+                    </a>
+                    <a href="{{ route('buyer.checkout', ['product_id' => $p->id]) }}" class="flex-1 h-10 rounded-[12px] bg-[#F2D98A] hover:bg-[#ECDDA1] text-[#1F261D] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                        <span class="material-symbols-outlined text-[17px]">shopping_cart_checkout</span>
+                        <span>Pesan</span>
                     </a>
                 @else
                     <button disabled class="w-full h-10 rounded-[12px] bg-[#E4E9DA] text-[#7A8275] text-[13px] font-semibold flex items-center justify-center gap-1.5 cursor-not-allowed">

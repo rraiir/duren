@@ -54,12 +54,15 @@
                 <span class="w-5 h-5 rounded-full {{ $activeFilter === 'all' && ! $isVerifyPage ? 'bg-white/80' : 'bg-[#E8F3E1]' }} flex items-center justify-center text-[11px] font-bold text-[#1F3318]">{{ $counts['all'] ?? 0 }}</span>
             </a>
 
-            <a href="{{ route('admin.orders', array_filter(['filter' => 'verify', 'search' => request('search'), 'type' => request('type')])) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all {{ $activeFilter === 'verify' ? 'bg-[#F2D98A] text-[#5C4A12] border border-[#ECDDA1] shadow-xs' : 'bg-white border border-[#E4E9DA] text-[#1F261D] hover:bg-[#F8FAF2]' }}">
-                <span>Perlu Verifikasi</span>
-                <span class="w-5 h-5 rounded-full {{ $activeFilter === 'verify' ? 'bg-white/80' : 'bg-[#FAF1CE]' }} flex items-center justify-center text-[11px] font-bold text-[#5C4A12]">{{ $counts['verify'] ?? 0 }}</span>
-            </a>
-
             @if(! $isVerifyPage)
+                <a href="{{ route('admin.orders', array_filter(['filter' => 'nego', 'search' => request('search'), 'type' => request('type')])) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all {{ $activeFilter === 'nego' ? 'bg-[#FAF1CE] text-[#5C4A12] border border-[#ECDDA1] shadow-xs' : 'bg-white border border-[#E4E9DA] text-[#1F261D] hover:bg-[#F8FAF2]' }}">
+                    <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px] text-[#7A6420]">handshake</span>
+                        <span>Tawaran Harga (Nego)</span>
+                    </span>
+                    <span class="w-5 h-5 rounded-full {{ $activeFilter === 'nego' ? 'bg-white/80' : 'bg-[#FAF1CE]' }} flex items-center justify-center text-[11px] font-bold text-[#5C4A12]">{{ $counts['nego'] ?? 0 }}</span>
+                </a>
+
                 <a href="{{ route('admin.orders', array_filter(['filter' => 'shipping', 'search' => request('search'), 'type' => request('type')])) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium whitespace-nowrap transition-all {{ $activeFilter === 'shipping' ? 'bg-[#E3F1DC] text-[#1F3318] border border-[#B7D7A8] shadow-xs' : 'bg-white border border-[#E4E9DA] text-[#1F261D] hover:bg-[#F8FAF2]' }}">
                     <span>Menunggu Ongkir</span>
                     <span class="w-5 h-5 rounded-full bg-[#E8F3E1] flex items-center justify-center text-[11px] font-semibold text-[#1F3318]">{{ $counts['shipping'] ?? 0 }}</span>
@@ -128,6 +131,9 @@
                             </td>
                             <td class="px-3 font-semibold text-[#1F261D]">
                                 {{ numberToRupiah($order->total_price) }}
+                                @if($order->negotiation_status === 'pending')
+                                    <span class="block text-[11px] text-[#7A6420] font-normal">Tawaran inDrive</span>
+                                @endif
                             </td>
                             <td class="px-3">
                                 <x-badge-status :type="$order->type" />
@@ -138,15 +144,37 @@
                             <td class="px-3 text-[#7A8275] font-mono text-xs">
                                 @if($order->status === 'waiting_payment')
                                     <span class="text-[#7A6420] font-semibold">{{ $order->pay_deadline ? $order->pay_deadline->format('H:i') . ' WIB' : '-' }}</span>
+                                @elseif($order->status === 'waiting_price_approval')
+                                    <span class="text-[#7A6420] font-medium text-[11px]">Approval Toko</span>
                                 @else
                                     -
                                 @endif
                             </td>
                             <td class="pr-4 pl-3 text-right sticky right-0 bg-white group-hover:bg-[#F8FAF2] transition-colors">
-                                <a href="{{ route('admin.orders.show', $order->code) }}" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-[12px] border border-[#E4E9DA] bg-white text-xs font-semibold text-[#1F261D] hover:bg-[#F8FAF2] transition-all shadow-xs">
-                                    <span>Lihat</span>
-                                    <span class="material-symbols-outlined text-[16px] text-[#4A5246]">chevron_right</span>
-                                </a>
+                                @if($order->status === 'waiting_price_approval' || $order->negotiation_status === 'pending')
+                                    <div class="inline-flex items-center gap-1.5 justify-end">
+                                        <form method="POST" action="{{ route('admin.orders.nego.approve', $order->code) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="px-2.5 py-1 rounded-[10px] bg-[#E3F1DC] hover:bg-[#CFE6C5] text-[#1F3318] text-xs font-semibold shadow-xs transition-colors" title="Setujui tawaran harga ini">
+                                                Setujui
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.orders.nego.reject', $order->code) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="px-2.5 py-1 rounded-[10px] bg-[#FBDDC6] hover:bg-[#F8CBB0] text-[#8C4A1A] text-xs font-semibold shadow-xs transition-colors" title="Tolak tawaran harga">
+                                                Tolak
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('admin.orders.show', $order->code) }}" class="inline-flex items-center justify-center p-1 rounded-[10px] border border-[#E4E9DA] bg-white text-xs text-[#1F261D] hover:bg-[#F8FAF2] transition-colors">
+                                            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                                        </a>
+                                    </div>
+                                @else
+                                    <a href="{{ route('admin.orders.show', $order->code) }}" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-[12px] border border-[#E4E9DA] bg-white text-xs font-semibold text-[#1F261D] hover:bg-[#F8FAF2] transition-all shadow-xs">
+                                        <span>Lihat</span>
+                                        <span class="material-symbols-outlined text-[16px] text-[#4A5246]">chevron_right</span>
+                                    </a>
+                                @endif
                             </td>
                         </tr>
                     @empty

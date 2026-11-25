@@ -18,7 +18,7 @@ class CatalogController extends Controller
             $query->where('type', $request->type);
         }
 
-        $products = $query->orderBy('name')->orderBy('size')->get();
+        $products = $query->with('reviews')->orderBy('name')->orderBy('size')->get();
 
         return view('buyer.catalog', compact('products'));
     }
@@ -28,11 +28,12 @@ class CatalogController extends Controller
      */
     public function show($id)
     {
-        $product = Product::where('is_active', true)->findOrFail($id);
+        $product = Product::where('is_active', true)->with(['reviews.user'])->findOrFail($id);
 
         // Rekomendasi 3 produk aktif lainnya
         $otherProducts = Product::where('is_active', true)
             ->where('id', '!=', $id)
+            ->with('reviews')
             ->take(3)
             ->get();
 

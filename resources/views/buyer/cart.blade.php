@@ -23,25 +23,26 @@
                 <span class="text-[14px] text-[#4A5246]">Tipe: <strong class="text-[#1F261D] font-semibold">Ready Stock</strong></span>
             </div>
 
-            <!-- Kotak Info Notifikasi Batasan Keranjang -->
+            <!-- Kotak Info Notifikasi Batasan Keranjang & Double Click -->
             <div class="mt-5 p-4 rounded-[14px] bg-[#FAF1CE] border border-[#ECDDA1] flex items-start space-x-3">
                 <span class="material-symbols-outlined text-[#7A6420] text-[20px] shrink-0 mt-0.5">info</span>
-                <p class="text-[14px] text-[#5C4A12] font-medium leading-relaxed">
-                    Satu keranjang hanya untuk satu tipe: Ready Stock atau Pre-Order.
-                </p>
+                <div class="text-[14px] text-[#5C4A12] font-medium leading-relaxed">
+                    <span>Satu keranjang hanya untuk satu tipe: Ready Stock atau Pre-Order.</span>
+                    <span class="block text-[12px] text-[#7A6420] mt-0.5">💡 Tip: Klik 2 kali pada kartu durian untuk melihat spesifikasi detail buah.</span>
+                </div>
             </div>
 
             <!-- Daftar Item Keranjang -->
             <div class="mt-5 space-y-4" id="cart-item-list">
                 <!-- ITEM 1: Montong L -->
-                <article class="p-4 rounded-[14px] bg-[#F8FAF2] border border-[#E4E9DA] flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all" data-id="item-1" data-unit-price="250000">
+                <article class="p-4 rounded-[14px] bg-[#F8FAF2] border border-[#E4E9DA] flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:border-[#B7D7A8] cursor-pointer" data-id="item-1" data-unit-price="250000" ondblclick="window.location='{{ route('buyer.product.show', 1) }}'" title="Klik 2 kali untuk melihat detail durian">
                     <div class="flex items-center space-x-4 min-w-0">
                         <div class="w-14 h-14 rounded-2xl bg-[#E3F1DC] flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[#4E6B43] text-[28px]">eco</span>
                         </div>
                         <div class="flex flex-col min-w-0">
                             <div class="flex items-center space-x-2">
-                                <h3 class="text-[16px] font-semibold text-[#1F261D]">Montong L</h3>
+                                <a href="{{ route('buyer.product.show', 1) }}" class="text-[16px] font-semibold text-[#1F261D] hover:text-[#7A6420] transition-colors">Montong L</a>
                                 <span class="px-2.5 py-0.5 rounded-full bg-[#E8F3E1] border border-[#CFE6C5] text-[12px] font-bold text-[#1F3318]">L</span>
                             </div>
                             <div class="flex items-center space-x-2 mt-1">
@@ -75,14 +76,14 @@
                 </article>
 
                 <!-- ITEM 2: Montong M -->
-                <article class="p-4 rounded-[14px] bg-[#F8FAF2] border border-[#E4E9DA] flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all" data-id="item-2" data-unit-price="190000">
+                <article class="p-4 rounded-[14px] bg-[#F8FAF2] border border-[#E4E9DA] flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:border-[#B7D7A8] cursor-pointer" data-id="item-2" data-unit-price="190000" ondblclick="window.location='{{ route('buyer.product.show', 2) }}'" title="Klik 2 kali untuk melihat detail durian">
                     <div class="flex items-center space-x-4 min-w-0">
                         <div class="w-14 h-14 rounded-2xl bg-[#FBEFB5] border border-[#ECDDA1] flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[#7A6420] text-[28px]">eco</span>
                         </div>
                         <div class="flex flex-col min-w-0">
                             <div class="flex items-center space-x-2">
-                                <h3 class="text-[16px] font-semibold text-[#1F261D]">Montong M</h3>
+                                <a href="{{ route('buyer.product.show', 2) }}" class="text-[16px] font-semibold text-[#1F261D] hover:text-[#7A6420] transition-colors">Montong M</a>
                                 <span class="px-2.5 py-0.5 rounded-full bg-[#FBEFB5] border border-[#ECDDA1] text-[12px] font-bold text-[#5C4A12]">M</span>
                             </div>
                             <div class="flex items-center space-x-2 mt-1">

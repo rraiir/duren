@@ -182,9 +182,26 @@
                         </span>
                     </div>
 
-                    <h3 class="text-[20px] font-semibold text-[#1F261D] mb-2 group-hover:text-[#7A6420] transition-colors">
+                    <h3 class="text-[20px] font-semibold text-[#1F261D] mb-1.5 group-hover:text-[#7A6420] transition-colors">
                         {{ $fp->name }} {{ $fp->size }}
                     </h3>
+
+                    <!-- Rating & Bintang Produk -->
+                    <div class="flex items-center gap-1.5 mb-2.5">
+                        <div class="flex items-center text-[#D4A017]">
+                            @for ($s = 1; $s <= 5; $s++)
+                                <span class="material-symbols-outlined text-[16px] {{ $s <= round($fp->average_rating) ? 'text-[#D4A017]' : 'text-[#E4E9DA]' }}">star</span>
+                            @endfor
+                        </div>
+                        <span class="text-[13px] font-bold text-[#1F261D]">{{ number_format($fp->average_rating, 1) }}</span>
+                        <span class="text-[12px] text-[#7A8275]">({{ $fp->review_count }} ulasan)</span>
+                        @if($fp->average_rating >= 4.5)
+                            <span class="ml-auto px-2 py-0.5 rounded-full bg-[#FAF1CE] border border-[#ECDDA1] text-[#7A6420] text-[10px] font-bold">
+                                🔥 Best Seller
+                            </span>
+                        @endif
+                    </div>
+
                     <div class="flex items-center gap-2 mb-4">
                         <span class="w-6 h-6 rounded-full bg-[#E3F1DC] text-[#1F3318] font-bold text-[12px] flex items-center justify-center">
                             {{ $fp->size }}
@@ -241,7 +258,62 @@
     </div>
 </section>
 
-<!-- 5. BAGIAN "Artikel Seputar Durian" -->
+<!-- 5. BAGIAN "Kata Pembeli Kami" (Ulasan & Rating Pelanggan) -->
+<section class="mt-20">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#FAF1CE] border border-[#ECDDA1] text-[#7A6420] text-[13px] font-bold mb-3 shadow-xs">
+            <span class="material-symbols-outlined text-[18px]">verified</span>
+            <span>Ulasan Pembeli Terverifikasi</span>
+        </div>
+        <h2 class="text-[32px] leading-[40px] font-bold text-[#1F261D] mb-2">Kata Pembeli Kami</h2>
+        <p class="text-[16px] text-[#6B7366]">Kepuasan penikmat durian nusantara dengan jaminan garansi mutu DuREN.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        @forelse ($customerReviews as $cr)
+            <div class="duren-card p-6 flex flex-col justify-between bg-white border border-[#E4E9DA] rounded-[20px] shadow-xs hover:border-[#B7D7A8] transition-all">
+                <div>
+                    <!-- Bintang Rating -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center text-[#D4A017]">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <span class="material-symbols-outlined text-[20px] {{ $i <= $cr->rating ? 'text-[#D4A017]' : 'text-[#E4E9DA]' }}">star</span>
+                            @endfor
+                        </div>
+                        <span class="text-[12px] font-semibold text-[#1F3318] bg-[#E3F1DC] px-2.5 py-0.5 rounded-full">
+                            {{ $cr->rating }}.0
+                        </span>
+                    </div>
+
+                    <!-- Kutipan Komentar -->
+                    <p class="text-[15px] leading-[24px] text-[#1F261D] mb-5 italic">
+                        "{{ $cr->comment }}"
+                    </p>
+                </div>
+
+                <!-- Info Pembeli & Produk -->
+                <div class="pt-4 border-t border-[#E4E9DA] flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-[#E8F3E1] text-[#1F3318] font-bold text-[13px] flex items-center justify-center">
+                            {{ strtoupper(substr($cr->user->name ?? 'P', 0, 1)) }}
+                        </div>
+                        <div>
+                            <h4 class="text-[14px] font-semibold text-[#1F261D] leading-tight">{{ $cr->user->name ?? 'Pembeli' }}</h4>
+                            <span class="text-[12px] text-[#6B7366] block leading-tight">{{ $cr->product->name ?? 'Durian' }} ({{ $cr->product->size ?? '' }})</span>
+                        </div>
+                    </div>
+                    <span class="text-[11px] text-[#7A8275]">{{ $cr->created_at ? $cr->created_at->format('d M Y') : '' }}</span>
+                </div>
+            </div>
+        @empty
+            <div class="col-span-3 text-center py-8 text-[#6B7366]">
+                Belum ada ulasan yang ditampilkan.
+            </div>
+        @endforelse
+    </div>
+</section>
+
+<!-- 6. BAGIAN "Artikel Seputar Durian" -->
 <section class="mt-20">
     <div class="flex items-center justify-between mb-8">
         <div>
@@ -298,7 +370,7 @@
     </div>
 </section>
 
-<!-- 6. AJAKAN BERTINDAK DI BAWAH (CTA) -->
+<!-- 7. AJAKAN BERTINDAK DI BAWAH (CTA) -->
 <section class="mt-20 mb-12">
     <div class="rounded-[24px] bg-[#E3F1DC] border border-[#CFE6C5] p-8 md:p-12 text-center flex flex-col items-center shadow-xs">
         <h2 class="text-[32px] md:text-[36px] font-bold text-[#1F3318] mb-3">

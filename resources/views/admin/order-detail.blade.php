@@ -40,6 +40,58 @@
         <!-- KOLOM KIRI (span 2) -->
         <!-- ========================================== -->
         <div class="lg:col-span-2 flex flex-col gap-6">
+            @if(isset($order) && ($order->status === 'waiting_price_approval' || $order->negotiation_status === 'pending'))
+                <!-- KARTU PERSETUJUAN TAWARAN HARGA (ala inDrive) -->
+                <section class="custom-card flex flex-col gap-5 bg-[#FFF9E6] border border-[#ECDDA1] p-6 rounded-[16px] shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-[#FAF1CE] flex items-center justify-center text-[#7A6420]">
+                                <span class="material-symbols-outlined text-[24px]">handshake</span>
+                            </div>
+                            <div>
+                                <h2 class="text-[18px] font-bold text-[#1F261D]">Pengajuan Tawaran Harga (inDrive)</h2>
+                                <p class="text-[13px] text-[#5C4A12]">Pembeli mengajukan penawaran harga untuk pesanan ini dan menunggu persetujuan Anda.</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-[#FAF1CE] text-[#5C4A12] border border-[#ECDDA1] text-[12px] font-bold">
+                            Menunggu Approval
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-[12px] bg-white border border-[#E4E9DA]">
+                        <div>
+                            <span class="text-[12px] text-[#6B7366]">Total Harga Normal Katalog</span>
+                            <p class="text-[16px] font-semibold text-[#1F261D] line-through">
+                                {{ numberToRupiah($order->orderItems->sum(fn($i) => ($i->product->price ?? 0) * $i->quantity)) }}
+                            </p>
+                        </div>
+                        <div>
+                            <span class="text-[12px] text-[#6B7366]">Harga yang Ditawar Pembeli</span>
+                            <p class="text-[20px] font-bold text-[#1F3318]">
+                                {{ numberToRupiah($order->proposed_price ?? $order->total_price) }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <form method="POST" action="{{ route('admin.orders.nego.approve', $order->code) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="h-11 px-6 rounded-[14px] bg-[#E3F1DC] hover:bg-[#CFE6C5] text-[#1F3318] text-[14px] font-semibold flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                <span>Setujui Tawaran Harga</span>
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('admin.orders.nego.reject', $order->code) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="h-11 px-5 rounded-[14px] bg-[#FBDDC6] hover:bg-[#F8CBB0] text-[#8C4A1A] text-[14px] font-semibold flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[18px]">cancel</span>
+                                <span>Tolak Tawaran</span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            @endif
+
             <!-- 1. KARTU ALUR STATUS -->
             <section class="custom-card flex flex-col gap-6 bg-[#F8FAF2]">
                 <div class="flex items-center justify-between">

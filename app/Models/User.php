@@ -64,6 +64,30 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke daftar alamat pembeli.
+     */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(BuyerAddress::class);
+    }
+
+    /**
+     * Dapatkan alamat utama pembeli.
+     */
+    public function primaryAddress()
+    {
+        return $this->hasOne(BuyerAddress::class)->where('is_primary', true);
+    }
+
+    /**
+     * Relasi ke ulasan yang pernah dibuat pembeli.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
      * Cek apakah user adalah admin.
      */
     public function isAdmin(): bool
